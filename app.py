@@ -10,6 +10,7 @@ from flask_login import (
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
 import sqlite3
+import os
 
 app = Flask(__name__)
 app.secret_key = "tjsc2026-chave-secreta-troque-em-producao"
@@ -410,4 +411,5 @@ def generate_schedule_route():
 
 
 if __name__ == "__main__":
-    app.run(debug=False, host="0.0.0.0", port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(debug=False, host="0.0.0.0", port=port)
