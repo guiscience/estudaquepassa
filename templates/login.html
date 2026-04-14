@@ -261,6 +261,7 @@
             </form>
 
             <form method="POST" action="{{ url_for('login') }}" id="register-form" autocomplete="on" style="display: none;">
+                <input type="hidden" name="action" value="register">
                 <div class="form-group">
                     <label for="reg-username">Nome de usuário</label>
                     <input
@@ -295,7 +296,7 @@
                     </select>
                 </div>
 
-                <button type="submit" name="action" value="register" class="btn-register" style="background: var(--primary); color: #fff; border: none;">
+                <button type="submit" class="btn-register" style="background: var(--primary); color: #fff; border: none;">
                     Criar conta
                 </button>
             </form>
@@ -304,19 +305,11 @@
                 const authForm = document.getElementById('auth-form');
                 const registerForm = document.getElementById('register-form');
                 const btnToggle = document.getElementById('btn-toggle-register');
-                const btnLogin = document.getElementById('btn-login');
 
                 btnToggle.addEventListener('click', function() {
                     authForm.style.display = 'none';
                     registerForm.style.display = 'block';
                     document.getElementById('reg-username').focus();
-                });
-
-                registerForm.querySelector('button[type="submit"]').addEventListener('click', function(e) {
-                    if (document.getElementById('reg-username').value && document.getElementById('reg-password').value) {
-                        this.name = 'action';
-                        this.value = 'register';
-                    }
                 });
             </script>
 
