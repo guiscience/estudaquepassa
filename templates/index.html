@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma de Estudos TJ-SC 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div style="display: flex; flex-direction: column; align-items: center; position: relative;">
+                <!-- User badge + logout -->
+                <div style="position: absolute; top: 0; right: 0; display: flex; align-items: center; gap: 0.6rem;">
+                    <span style="font-size: 0.8rem; color: var(--text-muted); background: rgba(255,255,255,0.05); padding: 0.3rem 0.75rem; border-radius: 99px; border: 1px solid var(--border);">👤 {{ username }}</span>
+                    <a href="{{ url_for('logout') }}" style="font-size: 0.8rem; color: #f87171; text-decoration: none; padding: 0.3rem 0.75rem; border-radius: 99px; border: 1px solid rgba(239,68,68,0.35); transition: background 0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.1)'" onmouseout="this.style.background=''">Sair</a>
+                </div>
+                <h1>TJ-SC 2026 Tracker</h1>
+                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                    <a href="/" style="color: var(--primary); font-weight: 700; text-decoration: none; font-size: 0.9rem; padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid var(--primary);">Edital Completo</a>
+                    <a href="/agenda" style="color: var(--text-muted); text-decoration: none; font-size: 0.9rem; padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid var(--border);">Minha Agenda</a>
+                </div>
+            </div>
+            <p style="text-align: center; margin-top: 1rem;">Seu planejamento estratégico focado 100% no edital e aulas do Focus</p>
+        </header>
+
+        <section class="dashboard-grid">
+            <!-- Daily Mission Summary -->
+            <a href="/agenda" style="text-decoration: none; color: inherit;">
+                <div class="glass-card stat-box" style="border: 1px solid var(--primary); background: rgba(59, 130, 246, 0.05);">
+                    <h3>Sua Missão Hoje</h3>
+                    <div class="stat-value primary-text" id="daily-mission-count">--</div>
+                    <p style="margin-top: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">Aulas para cumprir sua meta agora</p>
+                </div>
+            </a>
+            <!-- Countdown Timer -->
+            <div class="glass-card stat-box">
+                <h3>Tempo para a Prova</h3>
+                <div class="stat-value">
+                    <span id="days" class="primary-text">--</span>d 
+                    <span id="hours">--</span>h 
+                    <span id="minutes">--</span>m
+                </div>
+                <p style="margin-top: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">28 de Junho de 2026</p>
+            </div>
+
+            <!-- Overall Progress -->
+            <div class="glass-card stat-box">
+                <h3>Progresso Geral do Edital</h3>
+                <div class="stat-value accent-text" id="overall-progress-text">
+                    {% if total_minutes > 0 %}
+                        {{ "%.1f"|format((completed_minutes / total_minutes) * 100) }}%
+                    {% else %}
+                        0%
+                    {% endif %}
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar" id="overall-progress-bar" style="width: {% if total_minutes > 0 %}{{ (completed_minutes / total_minutes) * 100 }}%{% else %}0%{% endif %}"></div>
+                </div>
+                <p style="margin-top: 0.5rem; color: var(--text-muted); font-size: 0.8rem;">Baseado na duração das aulas</p>
+            </div>
+
+            <!-- Daily Goal -->
+            <div class="glass-card stat-box" id="daily-goal-box">
+                <h3>Meta Mínima Diária</h3>
+                <div class="stat-value primary-text" id="daily-goal">--</div>
+                <p id="daily-goal-desc" style="margin-top: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">Calculando...</p>
+            </div>
+        </section>
+
+        <section class="modules-section">
+            <h2>Módulos de Estudo (Focus Concursos)</h2>
+            <div class="modules-grid">
+                {% for mod in study_data %}
+                <div class="glass-card module-card">
+                    <h3>{{ mod.name }}</h3>
+                    <ul class="class-list">
+                        {% for cls in mod.classes %}
+                        <li class="class-item">
+                            <label class="custom-checkbox">
+                                <input type="checkbox" class="class-status-checkbox" data-id="{{ cls.id }}" {% if cls.is_completed %}checked{% endif %}>
+                                <span class="checkmark"></span>
+                                <span class="class-title {% if cls.is_completed %}checked-text{% endif %}">{{ cls.title }}</span>
+                                <span class="class-duration">{{ cls.duration_minutes }}m</span>
+                            </label>
+                        </li>
+                        {% else %}
+                        <p style="color: var(--text-muted); font-size: 0.9rem; text-align: center;">Nenhuma aula cadastrada ainda.</p>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+
+    <!-- Pass initial data to JS -->
+    <script>
+        // Trigger initial calculation
+        setTimeout(() => {
+            // To be safe, we replicate the initial daily goal calculation here since main.js only updates on change
+            const initialTotal = {{ total_minutes|default(0) }};
+            const initialCompleted = {{ completed_minutes|default(0) }};
+            
+            // Set today's mission count
+            document.getElementById('daily-mission-count').innerText = "{{ today_classes_count|default(0) }}";
+
+            const examDate = new Date('2026-06-28T00:00:00');
+            const now = new Date();
+            const daysLeft = Math.ceil((examDate - now) / (1000 * 60 * 60 * 24));
+            const minutesRemaining = initialTotal - initialCompleted;
+            
+            if (daysLeft > 0 && minutesRemaining > 0) {
+                const minsPerDay = Math.ceil(minutesRemaining / daysLeft);
+                const hrs = Math.floor(minsPerDay / 60);
+                const rMins = minsPerDay % 60;
+                
+                let timeStr = "";
+                if (hrs > 0) timeStr += `${hrs}h`;
+                if (rMins > 0) timeStr += `${rMins}m`;
+                
+                document.getElementById('daily-goal').innerText = timeStr || "0m";
+                document.getElementById('daily-goal-desc').innerText = "Por dia para fechar o edital";
+            } else if (minutesRemaining <= 0 && initialTotal > 0) {
+                document.getElementById('daily-goal').innerText = "Meta Atingida!";
+                document.getElementById('daily-goal').classList.remove('primary-text');
+                document.getElementById('daily-goal').classList.add('accent-text');
+                document.getElementById('daily-goal-desc').innerText = "Revisar conteúdo!";
+            } else if (initialTotal === 0) {
+                 document.getElementById('daily-goal').innerText = "N/A";
+                 document.getElementById('daily-goal-desc').innerText = "Nenhuma aula inserida";
+            } else {
+                 document.getElementById('daily-goal').innerText = "Prova Hoje!";
+            }
+        }, 100);
+    </script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

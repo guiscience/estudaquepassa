@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Agenda - TJ-SC 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .nav-links { display: flex; gap: 1rem; margin-top: 1rem; }
+        .nav-btn { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid var(--border); }
+        .nav-btn:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
+        .nav-active { border-color: var(--primary); color: var(--primary); }
+        
+        .agenda-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 2rem; }
+        .date-badge { background: var(--primary); color: white; padding: 0.2rem 1rem; border-radius: 99px; font-size: 0.9rem; font-weight: 700; }
+        
+        .mission-status { margin-bottom: 2rem; }
+        
+        .agenda-item { display: flex; flex-direction: column; gap: 0.5rem; }
+        .module-tag { font-size: 0.75rem; color: #60a5fa; text-transform: uppercase; font-weight: 700; }
+        
+        .preview-bar { display: flex; gap: 0.5rem; margin-top: 2rem; overflow-x: auto; padding-bottom: 1rem; }
+        .preview-card { min-width: 150px; text-align: center; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div style="display: flex; flex-direction: column; align-items: center; position: relative;">
+                <!-- User badge + logout -->
+                <div style="position: absolute; top: 0; right: 0; display: flex; align-items: center; gap: 0.6rem;">
+                    <span style="font-size: 0.8rem; color: var(--text-muted); background: rgba(255,255,255,0.05); padding: 0.3rem 0.75rem; border-radius: 99px; border: 1px solid var(--border);">👤 {{ username }}</span>
+                    <a href="{{ url_for('logout') }}" style="font-size: 0.8rem; color: #f87171; text-decoration: none; padding: 0.3rem 0.75rem; border-radius: 99px; border: 1px solid rgba(239,68,68,0.35); transition: background 0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.1)'" onmouseout="this.style.background=''">Sair</a>
+                </div>
+                <h1>Missão do Dia</h1>
+                <div class="nav-links">
+                    <a href="/" class="nav-btn">Edital Completo</a>
+                    <a href="/agenda" class="nav-btn nav-active">Minha Agenda</a>
+                </div>
+            </div>
+        </header>
+
+        <section class="agenda-header">
+            <div>
+                <h2 style="font-size: 1.5rem;">Cronograma: <span class="primary-text">{{ current_date }}</span></h2>
+            </div>
+            <div class="date-badge">
+                {% if day_total > 0 %}
+                    {{ day_done }} / {{ day_total }} min concluídos
+                {% else %}
+                    Dia de Descanso
+                {% endif %}
+            </div>
+        </section>
+
+        {% if day_total > 0 %}
+        <div class="glass-card mission-status">
+            <div class="stat-box">
+                <h3>Progresso de Hoje</h3>
+                <div class="progress-container" style="height: 20px;">
+                    <div class="progress-bar" style="width: {{ (day_done / day_total) * 100 if day_total > 0 else 0 }}%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modules-grid">
+            <div class="glass-card" style="grid-column: 1 / -1;">
+                <ul class="class-list">
+                    {% for cls in classes %}
+                    <li class="class-item agenda-item">
+                        <span class="module-tag">{{ cls.module_name }}</span>
+                        <label class="custom-checkbox">
+                            <input type="checkbox" class="class-status-checkbox" data-id="{{ cls.id }}" {% if cls.is_completed %}checked{% endif %}>
+                            <span class="checkmark"></span>
+                            <span class="class-title {% if cls.is_completed %}checked-text{% endif %}">{{ cls.title }}</span>
+                            <span class="class-duration">{{ cls.duration_minutes }}m</span>
+                        </label>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% else %}
+        <div class="glass-card" style="text-align: center; padding: 4rem;">
+            <p style="font-size: 1.5rem; color: var(--text-muted);">🎉 Hoje é dia de descanso ou revisão livre!</p>
+            <p>Recarregue as energias para o próximo bloco de estudos.</p>
+        </div>
+        {% endif %}
+
+        <h3 style="margin-top: 3rem; color: var(--text-muted);">Próximos Dias</h3>
+        <div class="preview-bar">
+            {% for d in preview_dates %}
+            <a href="/agenda?date={{ d }}" class="glass-card preview-card" style="padding: 1rem; text-decoration: none; color: inherit;">
+                <div style="font-size: 0.8rem; color: var(--text-muted);">{{ d }}</div>
+                <div style="font-weight: 700; margin-top: 0.5rem; color: var(--primary);">Ver Agenda</div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
