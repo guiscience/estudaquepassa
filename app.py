@@ -25,23 +25,32 @@ def get_db_connection():
         import psycopg
 
         conn = psycopg.connect(DB_PATH)
-        # Add execute method that converts ? to %s and supports fetchone/fetchall
+        # Add execute method that converts ? to %s and returns dict-like rows
         original_execute = conn.execute
 
         def new_execute(sql, params=()):
             sql = sql.replace("?", "%s")
             cursor = original_execute(sql, params)
 
-            # Make it have fetchone/fetchall methods
+            # Make it have fetchone/fetchall methods that return dict-like
             class Result:
                 def __init__(self, cursor):
                     self._cursor = cursor
 
                 def fetchone(self):
-                    return self._cursor.fetchone()
+                    row = self._cursor.fetchone()
+                    if row is None:
+                        return None
+                    # Convert to dict using column names
+                    cols = [desc[0] for desc in self._cursor.description]
+                    return dict(zip(cols, row))
 
                 def fetchall(self):
-                    return self._cursor.fetchall()
+                    rows = self._cursor.fetchall()
+                    if not rows:
+                        return []
+                    cols = [desc[0] for desc in self._cursor.description]
+                    return [dict(zip(cols, row)) for row in rows]
 
             return Result(cursor)
 
