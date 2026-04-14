@@ -14,90 +14,121 @@ import os
 
 app = Flask(__name__)
 app.secret_key = "tjsc2026-chave-secreta-troque-em-producao"
-DB_PATH = "tjsc_plan.db"
+
+# Database config - PostgreSQL on Railway, SQLite locally
+DB_PATH = os.environ.get("DATABASE_URL", "tjsc_plan.db")
+USE_PG = os.environ.get("DATABASE_URL") is not None
+
+
+def get_db_connection():
+    if USE_PG:
+        import psycopg2
+        from psycopg2.extras import RealDictCursor
+
+        conn = psycopg2.connect(DB_PATH)
+        conn.cursor_factory = RealDictCursor
+    else:
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row
+    return conn
+
 
 # Auto-create database on first run
-import sqlite3, os
+import sys
 
-if not os.path.exists(DB_PATH):
-    conn = sqlite3.connect(DB_PATH)
-    cur = conn.cursor()
-    cur.execute(
-        "CREATE TABLE IF NOT EXISTS modules (id INTEGER PRIMARY KEY, name TEXT, cargo_id INTEGER)"
-    )
-    cur.execute(
-        "CREATE TABLE IF NOT EXISTS classes (id INTEGER PRIMARY KEY, module_id INTEGER, title TEXT, duration_minutes INTEGER)"
-    )
-    cur.execute(
-        "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT UNIQUE, password_hash TEXT, cargo_id INTEGER DEFAULT 1)"
-    )
-    cur.execute(
-        "CREATE TABLE IF NOT EXISTS user_progress (user_id INTEGER, class_id INTEGER, is_completed INTEGER DEFAULT 0, scheduled_date TEXT, PRIMARY KEY (user_id, class_id))"
-    )
-    cur.execute("CREATE TABLE IF NOT EXISTS cargos (id INTEGER PRIMARY KEY, name TEXT)")
-    cur.execute("INSERT OR IGNORE INTO cargos (id, name) VALUES (1, 'Analista')")
-    cur.execute("INSERT OR IGNORE INTO cargos (id, name) VALUES (2, 'Tecnico')")
+if USE_PG:
+    import psycopg2
+    from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
-    # Shared modules (cargo_id = NULL)
-    cur.execute(
-        "INSERT OR IGNORE INTO modules (name, cargo_id) VALUES ('Informatica e LGPD - Leo Matos', NULL)"
-    )
-    cur.execute(
-        "INSERT OR IGNORE INTO modules (name, cargo_id) VALUES ('Transparencia e Controle - LAI', NULL)"
-    )
-    cur.execute(
-        "INSERT OR IGNORE INTO modules (name, cargo_id) VALUES ('Etica e Gestao no Servico Publico - Nathan Pilonetto', NULL)"
-    )
+    try:
+        conn = psycopg2.connect(DB_PATH)
+        cur = conn.cursor()
+        cur.execute(
+            """CREATE TABLE IF NOT EXISTS modules (id SERIAL PRIMARY KEY, name TEXT, cargo_id INTEGER)"""
+        )
+        cur.execute(
+            """CREATE TABLE IF NOT EXISTS classes (id SERIAL PRIMARY KEY, module_id INTEGER, title TEXT, duration_minutes INTEGER)"""
+        )
+        cur.execute(
+            """CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, username TEXT UNIQUE, password_hash TEXT, cargo_id INTEGER DEFAULT 1)"""
+        )
+        cur.execute(
+            """CREATE TABLE IF NOT EXISTS user_progress (user_id INTEGER, class_id INTEGER, is_completed INTEGER DEFAULT 0, scheduled_date TEXT, PRIMARY KEY (user_id, class_id))"""
+        )
+        cur.execute(
+            """CREATE TABLE IF NOT EXISTS cargos (id SERIAL PRIMARY KEY, name TEXT)"""
+        )
 
-    # Analista modules
-    cur.execute(
-        "INSERT OR IGNORE INTO modules (name, cargo_id) VALUES ('AFO - Administracao Financeira e Orcamentaria', 1)"
-    )
-    cur.execute(
-        "INSERT OR IGNORE INTO modules (name, cargo_id) VALUES ('Portugues - Douglas Wisniewski', 1)"
-    )
-    cur.execute(
-        "INSERT OR IGNORE INTO modules (name, cargo_id) VALUES ('Administracao Geral - Fabio de Assis', 1)"
-    )
-    cur.execute(
-        "INSERT OR IGNORE INTO modules (name, cargo_id) VALUES ('Gestao de Pessoas - Fabio de Assis', 1)"
-    )
-    cur.execute(
-        "INSERT OR IGNORE INTO modules (name, cargo_id) VALUES ('Adm de Materiais e Logistica - Fabio de Assis', 1)"
-    )
-    cur.execute(
-        "INSERT OR IGNORE INTO modules (name, cargo_id) VALUES ('Administracao Publica - Fabio de Assis', 1)"
-    )
+        cur.execute(
+            "INSERT INTO cargos (id, name) VALUES (1, 'Analista') ON CONFLICT DO NOTHING"
+        )
+        cur.execute(
+            "INSERT INTO cargos (id, name) VALUES (2, 'Tecnico') ON CONFLICT DO NOTHING"
+        )
 
-    # Tecnico modules
-    cur.execute(
-        "INSERT OR IGNORE INTO modules (name, cargo_id) VALUES ('Lingua Portuguesa - Janaina Souto (Tecnico)', 2)"
-    )
-    cur.execute(
-        "INSERT OR IGNORE INTO modules (name, cargo_id) VALUES ('Direito Civil - Yegor Moreira (Tecnico)', 2)"
-    )
-    cur.execute(
-        "INSERT OR IGNORE INTO modules (name, cargo_id) VALUES ('Direito Constitucional (Tecnico)', 2)"
-    )
-    cur.execute(
-        "INSERT OR IGNORE INTO modules (name, cargo_id) VALUES ('Direito Penal (Tecnico)', 2)"
-    )
-    cur.execute(
-        "INSERT OR IGNORE INTO modules (name, cargo_id) VALUES ('Direito Processual Penal (Tecnico)', 2)"
-    )
-    cur.execute(
-        "INSERT OR IGNORE INTO modules (name, cargo_id) VALUES ('Direito Administrativo (Tecnico)', 2)"
-    )
-    cur.execute(
-        "INSERT OR IGNORE INTO modules (name, cargo_id) VALUES ('Direito Processual Civil (Tecnico)', 2)"
-    )
-    cur.execute(
-        "INSERT OR IGNORE INTO modules (name, cargo_id) VALUES ('Informatica e Protecao de Dados (Tecnico)', 2)"
-    )
+        # Shared modules (cargo_id = NULL)
+        cur.execute(
+            "INSERT INTO modules (name, cargo_id) VALUES ('Informatica e LGPD - Leo Matos', NULL) ON CONFLICT DO NOTHING"
+        )
+        cur.execute(
+            "INSERT INTO modules (name, cargo_id) VALUES ('Transparencia e Controle - LAI', NULL) ON CONFLICT DO NOTHING"
+        )
+        cur.execute(
+            "INSERT INTO modules (name, cargo_id) VALUES ('Etica e Gestao no Servico Publico - Nathan Pilonetto', NULL) ON CONFLICT DO NOTHING"
+        )
 
-    conn.commit()
-    conn.close()
-    print("Database initialized with modules!")
+        # Analista modules
+        cur.execute(
+            "INSERT INTO modules (name, cargo_id) VALUES ('AFO - Administracao Financeira e Orcamentaria', 1) ON CONFLICT DO NOTHING"
+        )
+        cur.execute(
+            "INSERT INTO modules (name, cargo_id) VALUES ('Portugues - Douglas Wisniewski', 1) ON CONFLICT DO NOTHING"
+        )
+        cur.execute(
+            "INSERT INTO modules (name, cargo_id) VALUES ('Administracao Geral - Fabio de Assis', 1) ON CONFLICT DO NOTHING"
+        )
+        cur.execute(
+            "INSERT INTO modules (name, cargo_id) VALUES ('Gestao de Pessoas - Fabio de Assis', 1) ON CONFLICT DO NOTHING"
+        )
+        cur.execute(
+            "INSERT INTO modules (name, cargo_id) VALUES ('Adm de Materiais e Logistica - Fabio de Assis', 1) ON CONFLICT DO NOTHING"
+        )
+        cur.execute(
+            "INSERT INTO modules (name, cargo_id) VALUES ('Administracao Publica - Fabio de Assis', 1) ON CONFLICT DO NOTHING"
+        )
+
+        # Tecnico modules
+        cur.execute(
+            "INSERT INTO modules (name, cargo_id) VALUES ('Lingua Portuguesa - Janaina Souto (Tecnico)', 2) ON CONFLICT DO NOTHING"
+        )
+        cur.execute(
+            "INSERT INTO modules (name, cargo_id) VALUES ('Direito Civil - Yegor Moreira (Tecnico)', 2) ON CONFLICT DO NOTHING"
+        )
+        cur.execute(
+            "INSERT INTO modules (name, cargo_id) VALUES ('Direito Constitucional (Tecnico)', 2) ON CONFLICT DO NOTHING"
+        )
+        cur.execute(
+            "INSERT INTO modules (name, cargo_id) VALUES ('Direito Penal (Tecnico)', 2) ON CONFLICT DO NOTHING"
+        )
+        cur.execute(
+            "INSERT INTO modules (name, cargo_id) VALUES ('Direito Processual Penal (Tecnico)', 2) ON CONFLICT DO NOTHING"
+        )
+        cur.execute(
+            "INSERT INTO modules (name, cargo_id) VALUES ('Direito Administrativo (Tecnico)', 2) ON CONFLICT DO NOTHING"
+        )
+        cur.execute(
+            "INSERT INTO modules (name, cargo_id) VALUES ('Direito Processual Civil (Tecnico)', 2) ON CONFLICT DO NOTHING"
+        )
+        cur.execute(
+            "INSERT INTO modules (name, cargo_id) VALUES ('Informatica e Protecao de Dados (Tecnico)', 2) ON CONFLICT DO NOTHING"
+        )
+
+        conn.commit()
+        conn.close()
+        print("PostgreSQL database initialized!")
+    except Exception as e:
+        print(f"DB init error: {e}")
+        sys.exit(1)
 
 # ── Flask-Login setup ──────────────────────────────────────────────────────
 login_manager = LoginManager()
@@ -137,13 +168,6 @@ def load_user(user_id):
             row["id"], row["username"], row["cargo_id"], row["cargo_name"] or ""
         )
     return None
-
-
-# ── DB helper ──────────────────────────────────────────────────────────────
-def get_db_connection():
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    return conn
 
 
 # ── Auth routes ────────────────────────────────────────────────────────────
