@@ -25,10 +25,24 @@ def get_db_connection():
         import psycopg
 
         conn = psycopg.connect(DB_PATH)
+        return conn
     else:
         conn = sqlite3.connect(DB_PATH)
         conn.row_factory = sqlite3.Row
-    return conn
+        return conn
+
+
+# Helper to get cargos list (works with both SQLite and PostgreSQL)
+def get_cargos():
+    conn = get_db_connection()
+    if USE_PG:
+        cur = conn.cursor()
+        cur.execute("SELECT id, name FROM cargos ORDER BY id")
+        cargos = [{"id": r[0], "name": r[1]} for r in cur.fetchall()]
+    else:
+        cargos = conn.execute("SELECT * FROM cargos ORDER BY id").fetchall()
+    conn.close()
+    return cargos
 
 
 # Auto-create database on first run
@@ -173,9 +187,7 @@ def login():
     if current_user.is_authenticated:
         return redirect(url_for("index"))
 
-    conn = get_db_connection()
-    cargos = conn.execute("SELECT * FROM cargos ORDER BY id").fetchall()
-    conn.close()
+    cargos = get_cargos()
 
     if request.method == "POST":
         action = request.form.get("action")
