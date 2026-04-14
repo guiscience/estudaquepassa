@@ -25,7 +25,6 @@ def get_db_connection():
         import psycopg
 
         conn = psycopg.connect(DB_PATH)
-        conn.row_factory = psycopg.rows.Row
     else:
         conn = sqlite3.connect(DB_PATH)
         conn.row_factory = sqlite3.Row
