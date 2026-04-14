@@ -22,11 +22,10 @@ USE_PG = os.environ.get("DATABASE_URL") is not None
 
 def get_db_connection():
     if USE_PG:
-        import psycopg2
-        from psycopg2.extras import RealDictCursor
+        import psycopg
 
-        conn = psycopg2.connect(DB_PATH)
-        conn.cursor_factory = RealDictCursor
+        conn = psycopg.connect(DB_PATH)
+        conn.row_factory = psycopg.rows.Row
     else:
         conn = sqlite3.connect(DB_PATH)
         conn.row_factory = sqlite3.Row
@@ -37,11 +36,10 @@ def get_db_connection():
 import sys
 
 if USE_PG:
-    import psycopg2
-    from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+    import psycopg
 
     try:
-        conn = psycopg2.connect(DB_PATH)
+        conn = psycopg.connect(DB_PATH)
         cur = conn.cursor()
         cur.execute(
             """CREATE TABLE IF NOT EXISTS modules (id SERIAL PRIMARY KEY, name TEXT, cargo_id INTEGER)"""
