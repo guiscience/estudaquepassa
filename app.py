@@ -25,12 +25,25 @@ def get_db_connection():
         import psycopg
 
         conn = psycopg.connect(DB_PATH)
-        # Add execute method that converts ? to %s
+        # Add execute method that converts ? to %s and supports fetchone/fetchall
         original_execute = conn.execute
 
         def new_execute(sql, params=()):
             sql = sql.replace("?", "%s")
-            return original_execute(sql, params)
+            cursor = original_execute(sql, params)
+
+            # Make it have fetchone/fetchall methods
+            class Result:
+                def __init__(self, cursor):
+                    self._cursor = cursor
+
+                def fetchone(self):
+                    return self._cursor.fetchone()
+
+                def fetchall(self):
+                    return self._cursor.fetchall()
+
+            return Result(cursor)
 
         conn.execute = new_execute
         return conn
