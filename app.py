@@ -25,6 +25,14 @@ def get_db_connection():
         import psycopg
 
         conn = psycopg.connect(DB_PATH)
+        # Add execute method that converts ? to %s
+        original_execute = conn.execute
+
+        def new_execute(sql, params=()):
+            sql = sql.replace("?", "%s")
+            return original_execute(sql, params)
+
+        conn.execute = new_execute
         return conn
     else:
         conn = sqlite3.connect(DB_PATH)
