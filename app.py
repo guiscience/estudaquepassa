@@ -36,12 +36,67 @@ if not os.path.exists(DB_PATH):
     cur.execute("CREATE TABLE IF NOT EXISTS cargos (id INTEGER PRIMARY KEY, name TEXT)")
     cur.execute("INSERT OR IGNORE INTO cargos (id, name) VALUES (1, 'Analista')")
     cur.execute("INSERT OR IGNORE INTO cargos (id, name) VALUES (2, 'Tecnico')")
+
+    # Shared modules (cargo_id = NULL)
     cur.execute(
-        "INSERT OR IGNORE INTO modules (name, cargo_id) VALUES ('AFO', 1), ('Portugues', 1), ('Informatica', NULL), ('Adm Geral', 1), ('Gestao Pessoas', 1), ('Adm Materiais', 1), ('Adm Publica', 1), ('Transparencia', NULL), ('Etica', NULL)"
+        "INSERT OR IGNORE INTO modules (name, cargo_id) VALUES ('Informatica e LGPD - Leo Matos', NULL)"
     )
+    cur.execute(
+        "INSERT OR IGNORE INTO modules (name, cargo_id) VALUES ('Transparencia e Controle - LAI', NULL)"
+    )
+    cur.execute(
+        "INSERT OR IGNORE INTO modules (name, cargo_id) VALUES ('Etica e Gestao no Servico Publico - Nathan Pilonetto', NULL)"
+    )
+
+    # Analista modules
+    cur.execute(
+        "INSERT OR IGNORE INTO modules (name, cargo_id) VALUES ('AFO - Administracao Financeira e Orcamentaria', 1)"
+    )
+    cur.execute(
+        "INSERT OR IGNORE INTO modules (name, cargo_id) VALUES ('Portugues - Douglas Wisniewski', 1)"
+    )
+    cur.execute(
+        "INSERT OR IGNORE INTO modules (name, cargo_id) VALUES ('Administracao Geral - Fabio de Assis', 1)"
+    )
+    cur.execute(
+        "INSERT OR IGNORE INTO modules (name, cargo_id) VALUES ('Gestao de Pessoas - Fabio de Assis', 1)"
+    )
+    cur.execute(
+        "INSERT OR IGNORE INTO modules (name, cargo_id) VALUES ('Adm de Materiais e Logistica - Fabio de Assis', 1)"
+    )
+    cur.execute(
+        "INSERT OR IGNORE INTO modules (name, cargo_id) VALUES ('Administracao Publica - Fabio de Assis', 1)"
+    )
+
+    # Tecnico modules
+    cur.execute(
+        "INSERT OR IGNORE INTO modules (name, cargo_id) VALUES ('Lingua Portuguesa - Janaina Souto (Tecnico)', 2)"
+    )
+    cur.execute(
+        "INSERT OR IGNORE INTO modules (name, cargo_id) VALUES ('Direito Civil - Yegor Moreira (Tecnico)', 2)"
+    )
+    cur.execute(
+        "INSERT OR IGNORE INTO modules (name, cargo_id) VALUES ('Direito Constitucional (Tecnico)', 2)"
+    )
+    cur.execute(
+        "INSERT OR IGNORE INTO modules (name, cargo_id) VALUES ('Direito Penal (Tecnico)', 2)"
+    )
+    cur.execute(
+        "INSERT OR IGNORE INTO modules (name, cargo_id) VALUES ('Direito Processual Penal (Tecnico)', 2)"
+    )
+    cur.execute(
+        "INSERT OR IGNORE INTO modules (name, cargo_id) VALUES ('Direito Administrativo (Tecnico)', 2)"
+    )
+    cur.execute(
+        "INSERT OR IGNORE INTO modules (name, cargo_id) VALUES ('Direito Processual Civil (Tecnico)', 2)"
+    )
+    cur.execute(
+        "INSERT OR IGNORE INTO modules (name, cargo_id) VALUES ('Informatica e Protecao de Dados (Tecnico)', 2)"
+    )
+
     conn.commit()
     conn.close()
-    print("Database initialized!")
+    print("Database initialized with modules!")
 
 # ── Flask-Login setup ──────────────────────────────────────────────────────
 login_manager = LoginManager()
