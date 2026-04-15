@@ -13,7 +13,7 @@ import sqlite3
 import os
 
 app = Flask(__name__)
-app.secret_key = "tjsc2026-chave-secreta-troque-em-producao"
+app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-key-change-me")
 
 # Database config - PostgreSQL on Railway, SQLite locally
 DB_PATH = os.environ.get("DATABASE_URL", "tjsc_plan.db")
@@ -98,13 +98,6 @@ if USE_PG:
         conn = psycopg.connect(DB_PATH)
         cur = conn.cursor()
 
-        # Drop and recreate tables
-        cur.execute("DROP TABLE IF EXISTS user_progress CASCADE")
-        cur.execute("DROP TABLE IF EXISTS classes CASCADE")
-        cur.execute("DROP TABLE IF EXISTS modules CASCADE")
-        cur.execute("DROP TABLE IF EXISTS users CASCADE")
-        cur.execute("DROP TABLE IF EXISTS cargos CASCADE")
-
         cur.execute(
             """CREATE TABLE IF NOT EXISTS modules (id SERIAL PRIMARY KEY, name TEXT, cargo_id INTEGER)"""
         )
@@ -120,6 +113,9 @@ if USE_PG:
         cur.execute(
             """CREATE TABLE IF NOT EXISTS cargos (id SERIAL PRIMARY KEY, name TEXT)"""
         )
+        cur.execute("SELECT COUNT(*) FROM classes")
+        if cur.fetchone()[0] > 0:
+            raise RuntimeError("DB_ALREADY_INITIALIZED")
 
         cur.execute("INSERT INTO cargos (id, name) VALUES (1, 'Analista')")
         cur.execute("INSERT INTO cargos (id, name) VALUES (2, 'Tecnico')")
@@ -1195,212 +1191,16 @@ if USE_PG:
         conn.close()
         print("PostgreSQL database fully initialized with AFO and all modules!")
     except Exception as e:
-        print(f"DB init error: {e}")
-        sys.exit(1)
+        if str(e) == "DB_ALREADY_INITIALIZED":
+            try:
+                conn.close()
+            except Exception:
+                pass
+            print("PostgreSQL database already initialized. Skipping seed.")
+        else:
+            print(f"DB init error: {e}")
+            sys.exit(1)
 
-        cur.execute("INSERT INTO cargos (id, name) VALUES (1, 'Analista')")
-        cur.execute("INSERT INTO cargos (id, name) VALUES (2, 'Tecnico')")
-
-        # Analista modules (id 1-6)
-        modules_data = [
-            (1, "AFO - Administracao Financeira e Orcamentaria", 1),
-            (2, "Portugues - Douglas Wisniewski", 1),
-            (3, "Informatica e LGPD - Leo Matos", None),
-            (4, "Administracao Geral - Fabio de Assis", 1),
-            (5, "Gestao de Pessoas - Fabio de Assis", 1),
-            (6, "Adm de Materiais e Logistica - Fabio de Assis", 1),
-            (7, "Administracao Publica - Fabio de Assis", 1),
-            (8, "Transparencia e Controle - LAI", None),
-            (9, "Etica e Gestao no Servico Publico - Nathan Pilonetto", None),
-            # Tecnico modules (id 10-18)
-            (10, "Lingua Portuguesa - Janaina Souto (Tecnico)", 2),
-            (11, "Direito Civil - Yegor Moreira (Tecnico)", 2),
-            (12, "Direito Administrativo (Tecnico)", 2),
-            (13, "Direito Constitucional (Tecnico)", 2),
-            (14, "Direito Penal (Tecnico)", 2),
-            (15, "Direito Processual Penal (Tecnico)", 2),
-            (16, "Direito Processual Civil (Tecnico)", 2),
-            (17, "Informatica e Protecao de Dados (Tecnico)", 2),
-        ]
-
-        for mid, name, cid in modules_data:
-            cur.execute(
-                "INSERT INTO modules (id, name, cargo_id) VALUES (%s, %s, %s)",
-                (mid, name, cid),
-            )
-
-        # Add classes for each module from local DB
-        # Module 1 - AFO (92 classes)
-        afo_classes = [
-            ("Orcamento publica: Conceito", 41),
-            ("Questoes de Orcamento publica: Conceito inicial - Parte I", 41),
-            ("Questoes de Orcamento publica: Conceito inicial - Parte II", 50),
-            ("Questoes de Orcamento publica: Conceito inicial - Parte III", 51),
-            ("Questoes de Orcamento publica: Conceito inicial - Parte IV", 37),
-            ("A Constituicao e o Sistema Orcamentario Brasileiro - Parte I", 26),
-            ("A Constituicao e o Sistema Orcamentario Brasileiro - Parte II", 36),
-            (
-                "Questoes de a Constituicao e o Sistema Orcamentario Brasileiro - Parte I",
-                42,
-            ),
-            (
-                "Questoes de a Constituicao e o Sistema Orcamentario Brasileiro - Parte II",
-                42,
-            ),
-            (
-                "Questoes de a Constituicao e o Sistema Orcamentario Brasileiro - Parte III",
-                46,
-            ),
-            (
-                "Questoes de a Constituicao e o Sistema Orcamentario Brasileiro - Parte IV",
-                38,
-            ),
-            (
-                "Questoes de a Constituicao e o Sistema Orcamentario Brasileiro - Parte V",
-                33,
-            ),
-            (
-                "Questoes de a Constituicao e o Sistema Orcamentario Brasileiro - Parte VI",
-                34,
-            ),
-            (
-                "Questoes de a Constituicao e o Sistema Orcamentario Brasileiro - Parte VII",
-                29,
-            ),
-            (
-                "Questoes de a Constituicao e o Sistema Orcamentario Brasileiro - Parte VIII",
-                41,
-            ),
-            (
-                "Questoes de a Constituicao e o Sistema Orcamentario Brasileiro - Parte IX",
-                41,
-            ),
-        ]
-        for title, dur in afo_classes[:10]:
-            cur.execute(
-                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (1, %s, %s)",
-                (title, dur),
-            )
-
-        # Module 2 - Portuguese (104 classes)
-        for i in range(1, 11):
-            cur.execute(
-                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (2, %s, %s)",
-                (f"Portugues Aula {i}", 30 + i * 5),
-            )
-
-        # Module 3 - Informatics (36 classes)
-        for i in range(1, 8):
-            cur.execute(
-                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (3, %s, %s)",
-                (f"Informatica Aula {i}", 30 + i * 5),
-            )
-
-        # Module 4 - Adm Geral (36 classes)
-        for i in range(1, 8):
-            cur.execute(
-                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (4, %s, %s)",
-                (f"Adm Geral Aula {i}", 30 + i * 5),
-            )
-
-        # Module 5 - Gestao Pessoas (26 classes)
-        for i in range(1, 6):
-            cur.execute(
-                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (5, %s, %s)",
-                (f"Gestao Pessoas Aula {i}", 35),
-            )
-
-        # Module 6 - Adm Materiais (9 classes)
-        for i in range(1, 4):
-            cur.execute(
-                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (6, %s, %s)",
-                (f"Adm Materiais Aula {i}", 40),
-            )
-
-        # Module 7 - Adm Publica (9 classes)
-        for i in range(1, 4):
-            cur.execute(
-                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (7, %s, %s)",
-                (f"Adm Publica Aula {i}", 40),
-            )
-
-        # Module 8 - Transparencia (15 classes)
-        for i in range(1, 5):
-            cur.execute(
-                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (8, %s, %s)",
-                (f"Transparencia Aula {i}", 35),
-            )
-
-        # Module 9 - Etica (37 classes)
-        for i in range(1, 8):
-            cur.execute(
-                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (9, %s, %s)",
-                (f"Etica Aula {i}", 35),
-            )
-
-        # Tecnico modules
-        # Portuguese (50 classes)
-        for i in range(1, 11):
-            cur.execute(
-                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (10, %s, %s)",
-                (f"Portugues Tecnico Aula {i}", 30 + i * 3),
-            )
-
-        # Civil Law (48 classes)
-        for i in range(1, 10):
-            cur.execute(
-                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (11, %s, %s)",
-                (f"Direito Civil Aula {i}", 35),
-            )
-
-        # Administrative (26 classes)
-        for i in range(1, 6):
-            cur.execute(
-                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (12, %s, %s)",
-                (f"Direito Adm Aula {i}", 40),
-            )
-
-        # Constitutional (92 classes)
-        for i in range(1, 11):
-            cur.execute(
-                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (13, %s, %s)",
-                (f"Direito Const Aula {i}", 35),
-            )
-
-        # Penal (50 classes)
-        for i in range(1, 11):
-            cur.execute(
-                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (14, %s, %s)",
-                (f"Direito Penal Aula {i}", 35),
-            )
-
-        # Processual Penal (44 classes)
-        for i in range(1, 9):
-            cur.execute(
-                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (15, %s, %s)",
-                (f"Proc Penal Aula {i}", 35),
-            )
-
-        # Processual Civil (30 classes)
-        for i in range(1, 7):
-            cur.execute(
-                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (16, %s, %s)",
-                (f"Proc Civil Aula {i}", 35),
-            )
-
-        # Informatics Tech (45 classes)
-        for i in range(1, 10):
-            cur.execute(
-                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (17, %s, %s)",
-                (f"Informatica Tech Aula {i}", 30 + i * 2),
-            )
-
-        conn.commit()
-        conn.close()
-        print("PostgreSQL database fully initialized!")
-    except Exception as e:
-        print(f"DB init error: {e}")
-        sys.exit(1)
 
 # ── Flask-Login setup ──────────────────────────────────────────────────────
 login_manager = LoginManager()
