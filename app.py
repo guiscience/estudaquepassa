@@ -124,6 +124,296 @@ if USE_PG:
         cur.execute("INSERT INTO cargos (id, name) VALUES (1, 'Analista')")
         cur.execute("INSERT INTO cargos (id, name) VALUES (2, 'Tecnico')")
 
+        # AFO - Analista (92 classes)
+        cur.execute(
+            "INSERT INTO modules (id, name, cargo_id) VALUES (1, 'AFO - Administracao Financeira e Orcamentaria - Marcelo Adriano', 1)"
+        )
+
+        afo_classes = [
+            ("Orcamento publica: Conceito", 42),
+            ("Questoes de Orcamento publica: Conceito inicial - Parte I", 42),
+            ("Questoes de Orcamento publica: Conceito inicial - Parte II", 51),
+            ("Questoes de Orcamento publica: Conceito inicial - Parte III", 51),
+            ("Questoes de Orcamento publica: Conceito inicial - Parte IV", 37),
+            ("A Constituicao e o Sistema Orcamentario Brasileiro - Parte I", 27),
+            ("A Constituicao e o Sistema Orcamentario Brasileiro - Parte II", 37),
+            (
+                "Questoes de a Constituicao e o Sistema Orcamentario Brasileiro - Parte I",
+                43,
+            ),
+            (
+                "Questoes de a Constituicao e o Sistema Orcamentario Brasileiro - Parte II",
+                42,
+            ),
+            (
+                "Questoes de a Constituicao e o Sistema Orcamentario Brasileiro - Parte III",
+                46,
+            ),
+            (
+                "Questoes de a Constituicao e o Sistema Orcamentario Brasileiro - Parte IV",
+                38,
+            ),
+            (
+                "Questoes de a Constituicao e o Sistema Orcamentario Brasileiro - Parte V",
+                33,
+            ),
+            (
+                "Questoes de a Constituicao e o Sistema Orcamentario Brasileiro - Parte VI",
+                34,
+            ),
+            (
+                "Questoes de a Constituicao e o Sistema Orcamentario Brasileiro - Parte VII",
+                29,
+            ),
+            (
+                "Questoes de a Constituicao e o Sistema Orcamentario Brasileiro - Parte VIII",
+                42,
+            ),
+            (
+                "Questoes de a Constituicao e o Sistema Orcamentario Brasileiro - Parte IX",
+                42,
+            ),
+            ("Tecnicas orcamentarias", 43),
+            ("Principios orcamentarios", 53),
+            ("Questoes de principios orcamentarios - Parte I", 38),
+            ("Questoes de principios orcamentarios - Parte II", 41),
+            ("Questoes de principios orcamentarios - Parte III", 34),
+            ("Questoes de principios orcamentarios - Parte IV", 45),
+            ("Questoes de principios orcamentarios - Parte V", 37),
+            ("Questoes de principios orcamentarios - Parte VI", 37),
+            ("Questoes de principios orcamentarios - Parte VII", 31),
+            ("Questoes de principios orcamentarios - Parte VIII", 44),
+            ("Questoes de principios orcamentarios - Parte IX", 20),
+            ("Ciclo orcamentario", 52),
+            ("Questoes de Ciclo orcamentario - Parte I", 41),
+            ("Questoes de Ciclo orcamentario - Parte II", 36),
+            ("Questoes de Ciclo orcamentario - Parte III", 29),
+            ("Questoes de Ciclo orcamentario - Parte IV", 39),
+            ("Questoes de Ciclo orcamentario - Parte V", 27),
+            ("Processo orcamentario", 43),
+            ("Sistema de planejamento e de orçamento federal", 43),
+            ("Instrumento de Planejamento e Orçamento: PPA", 65),
+            ("Instrumento de Planejamento e Orçamento: LDO", 58),
+            ("Instrumento de Planejamento e Orçamento: LOA", 64),
+            ("Sistema e processo de orcamentacao", 49),
+            ("Classificacoes orcamentarias", 33),
+            ("Estrutura programatica", 48),
+            ("Creditos ordinarios e Creditos adicionais", 86),
+            ("Questoes de Creditos - Parte I", 28),
+            ("Questoes de Creditos - Parte II", 23),
+            ("Questoes de Creditos - Parte III", 18),
+            ("Questoes de Creditos - Parte IV", 33),
+            ("Questoes de Creditos - Parte V", 37),
+            ("Questoes de Creditos - Parte VI", 43),
+            ("Questoes de Creditos - Parte VII", 29),
+            ("Questoes de Creditos - Parte VIII", 48),
+            ("Receita publica", 71),
+            ("Receita Publica e suas classificacoes", 39),
+            ("Questoes de Receita publica - Parte I", 36),
+            ("Questoes de Receita publica - Parte II", 34),
+            ("Questoes de Receita publica - Parte III", 41),
+            ("Questoes de Receita publica - Parte IV", 22),
+            ("Questoes de Receita publica - Parte V", 36),
+            ("Questoes de Receita publica - Parte VI", 42),
+            ("Questoes de Receita publica - Parte VII", 43),
+            ("Despesa publica", 86),
+            ("Questoes de Despesa publica - Parte I", 40),
+            ("Questoes de Despesa publica - Parte II", 40),
+            ("Questoes de Despesa publica - Parte III", 39),
+            ("Questoes de Despesa publica - Parte IV", 33),
+            ("Questoes de Despesa publica - Parte V", 33),
+            ("Questoes de Despesa publica - Parte VI", 30),
+            ("Despesas de Exercicios Anteriores", 30),
+            ("Restos a Pagar", 66),
+            ("Questoes de Restos a Pagar - Parte I", 39),
+            ("Questoes de Restos a Pagar - Parte II", 35),
+            ("Questoes de Restos a Pagar - Parte III", 37),
+            ("Questoes de Restos a Pagar - Parte IV", 28),
+            ("Regime Fiscal Extraordinario", 27),
+            ("Suprimento de Fundos", 68),
+            ("Questoes de Suprimento de Fundos - Parte I", 40),
+            ("Questoes de Suprimento de Fundos - Parte II", 40),
+            ("Questoes de Suprimento de Fundos - Parte III", 28),
+            ("Questoes de Suprimento de Fundos - Parte IV", 35),
+            ("Questoes de Suprimento de Fundos - Parte V", 10),
+            ("Lei Complementar 101/2000 - LRF - Parte I", 61),
+            ("Lei Complementar 101/2000 - LRF - Parte II", 58),
+            ("Lei Complementar 101/2000 - LRF - Parte III", 59),
+            ("Questoes de LRF - Parte I", 42),
+            ("Questoes de LRF - Parte II", 18),
+            ("Questoes de LRF - Parte III", 40),
+            ("Questoes de LRF - Parte IV", 44),
+            ("Questoes de LRF - Parte V", 112),
+            ("Lei 4.320 de 1964 - Parte I", 64),
+            ("Lei 4.320 de 1964 - Parte II", 58),
+            ("Lei 4.320 de 1964 - Parte III", 61),
+            ("Questoes da Lei 4.320 de 1964", 91),
+            ("Maratona de Questoes", 64),
+        ]
+
+        for title, dur in afo_classes:
+            cur.execute(
+                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (1, %s, %s)",
+                (title, dur),
+            )
+
+        # Portuguese Analista
+        cur.execute(
+            "INSERT INTO modules (id, name, cargo_id) VALUES (2, 'Portugues - Douglas Wisniewski', 1)"
+        )
+        for i in range(1, 31):
+            cur.execute(
+                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (2, %s, %s)",
+                (f"Aula {i}", 35),
+            )
+
+        # Shared modules
+        cur.execute(
+            "INSERT INTO modules (id, name, cargo_id) VALUES (3, 'Informatica e LGPD - Leo Matos', NULL)"
+        )
+        for i in range(1, 11):
+            cur.execute(
+                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (3, %s, %s)",
+                (f"Informatica Aula {i}", 35),
+            )
+
+        cur.execute(
+            "INSERT INTO modules (id, name, cargo_id) VALUES (4, 'Administracao Geral - Fabio de Assis', 1)"
+        )
+        for i in range(1, 11):
+            cur.execute(
+                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (4, %s, %s)",
+                (f"Adm Geral Aula {i}", 35),
+            )
+
+        cur.execute(
+            "INSERT INTO modules (id, name, cargo_id) VALUES (5, 'Gestao de Pessoas - Fabio de Assis', 1)"
+        )
+        for i in range(1, 8):
+            cur.execute(
+                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (5, %s, %s)",
+                (f"Gestao Aula {i}", 35),
+            )
+
+        cur.execute(
+            "INSERT INTO modules (id, name, cargo_id) VALUES (6, 'Adm de Materiais - Fabio de Assis', 1)"
+        )
+        for i in range(1, 4):
+            cur.execute(
+                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (6, %s, %s)",
+                (f"Adm Materiais Aula {i}", 40),
+            )
+
+        cur.execute(
+            "INSERT INTO modules (id, name, cargo_id) VALUES (7, 'Administracao Publica - Fabio de Assis', 1)"
+        )
+        for i in range(1, 4):
+            cur.execute(
+                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (7, %s, %s)",
+                (f"Adm Publica Aula {i}", 40),
+            )
+
+        cur.execute(
+            "INSERT INTO modules (id, name, cargo_id) VALUES (8, 'Transparencia e Controle - LAI', NULL)"
+        )
+        for i in range(1, 5):
+            cur.execute(
+                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (8, %s, %s)",
+                (f"Transparencia Aula {i}", 35),
+            )
+
+        cur.execute(
+            "INSERT INTO modules (id, name, cargo_id) VALUES (9, 'Etica - Nathan Pilonetto', NULL)"
+        )
+        for i in range(1, 8):
+            cur.execute(
+                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (9, %s, %s)",
+                (f"Etica Aula {i}", 35),
+            )
+
+        # Tecnico modules
+        cur.execute(
+            "INSERT INTO modules (id, name, cargo_id) VALUES (10, 'Portugues - Janaina Souto (Tecnico)', 2)"
+        )
+        for i in range(1, 16):
+            cur.execute(
+                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (10, %s, %s)",
+                (f"Portugues Tec Aula {i}", 35),
+            )
+
+        cur.execute(
+            "INSERT INTO modules (id, name, cargo_id) VALUES (11, 'Direito Civil - Yegor Moreira (Tecnico)', 2)"
+        )
+        for i in range(1, 13):
+            cur.execute(
+                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (11, %s, %s)",
+                (f"Direito Civil Aula {i}", 35),
+            )
+
+        cur.execute(
+            "INSERT INTO modules (id, name, cargo_id) VALUES (12, 'Direito Administrativo (Tecnico)', 2)"
+        )
+        for i in range(1, 8):
+            cur.execute(
+                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (12, %s, %s)",
+                (f"Direito Adm Aula {i}", 35),
+            )
+
+        cur.execute(
+            "INSERT INTO modules (id, name, cargo_id) VALUES (13, 'Direito Constitucional (Tecnico)', 2)"
+        )
+        for i in range(1, 21):
+            cur.execute(
+                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (13, %s, %s)",
+                (f"Direito Const Aula {i}", 35),
+            )
+
+        cur.execute(
+            "INSERT INTO modules (id, name, cargo_id) VALUES (14, 'Direito Penal (Tecnico)', 2)"
+        )
+        for i in range(1, 13):
+            cur.execute(
+                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (14, %s, %s)",
+                (f"Direito Penal Aula {i}", 35),
+            )
+
+        cur.execute(
+            "INSERT INTO modules (id, name, cargo_id) VALUES (15, 'Direito Processual Penal (Tecnico)', 2)"
+        )
+        for i in range(1, 12):
+            cur.execute(
+                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (15, %s, %s)",
+                (f"Proc Penal Aula {i}", 35),
+            )
+
+        cur.execute(
+            "INSERT INTO modules (id, name, cargo_id) VALUES (16, 'Direito Processual Civil (Tecnico)', 2)"
+        )
+        for i in range(1, 8):
+            cur.execute(
+                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (16, %s, %s)",
+                (f"Proc Civil Aula {i}", 35),
+            )
+
+        cur.execute(
+            "INSERT INTO modules (id, name, cargo_id) VALUES (17, 'Informatica - Leo Matos (Tecnico)', 2)"
+        )
+        for i in range(1, 12):
+            cur.execute(
+                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (17, %s, %s)",
+                (f"Informatica Tec Aula {i}", 35),
+            )
+
+        conn.commit()
+        conn.close()
+        print("PostgreSQL database fully initialized with AFO and all modules!")
+    except Exception as e:
+        print(f"DB init error: {e}")
+        sys.exit(1)
+
+        cur.execute("INSERT INTO cargos (id, name) VALUES (1, 'Analista')")
+        cur.execute("INSERT INTO cargos (id, name) VALUES (2, 'Tecnico')")
+
         # Analista modules (id 1-6)
         modules_data = [
             (1, "AFO - Administracao Financeira e Orcamentaria", 1),
