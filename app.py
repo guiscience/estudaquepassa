@@ -764,12 +764,49 @@ if USE_PG:
             )
 
         cur.execute(
-            "INSERT INTO modules (id, name, cargo_id) VALUES (12, 'Direito Administrativo (Tecnico)', 2)"
+            "INSERT INTO modules (id, name, cargo_id) VALUES (12, 'Direito Administrativo - Matheus Carvalho (Tecnico)', 2)"
         )
-        for i in range(1, 8):
+
+        adm_tec_classes = [
+            (
+                "Regime Juridico Administrativo e os Principios da Adm Publica - Parte I",
+                30,
+            ),
+            (
+                "Regime Juridico Administrativo e os Principios da Adm Publica - Parte II",
+                30,
+            ),
+            ("Questoes de Principios", 10),
+            ("Organizacao da Adm Publica - Parte I", 30),
+            ("Organizacao da Adm Publica - Parte II", 30),
+            ("Organizacao da Adm Publica - Parte III", 30),
+            ("Questoes de Organizacao da Adm Publica", 10),
+            ("Agentes Publicos - Parte I", 30),
+            ("Agentes Publicos - Parte II", 30),
+            ("Agentes Publicos - Parte III", 30),
+            ("Agentes Publicos - Parte IV", 30),
+            ("Agentes Publicos - Parte V", 30),
+            ("Questoes de Agentes Publicos", 10),
+            ("Poderes Administrativos - Parte I", 30),
+            ("Poderes Administrativos - Parte II", 30),
+            ("Questoes de Poderes Administrativos", 10),
+            ("Atos Administrativos - Parte I", 30),
+            ("Atos Administrativos - Parte II", 30),
+            ("Atos Administrativos - Parte III", 30),
+            ("Questoes de Atos Administrativos", 10),
+            ("Licitacoes e Contratos Administrativos - Parte I", 30),
+            ("Licitacoes e Contratos Administrativos - Parte II", 30),
+            ("Licitacoes e Contratos Administrativos - Parte III", 30),
+            ("Licitacoes e Contratos Administrativos - Parte IV", 30),
+            ("Licitacoes e Contratos Administrativos - Parte V", 30),
+            ("Questoes de Licitacoes e Contratos Administrativos", 10),
+            ("Estrutura administrativa do Poder Judiario de SC", 20),
+        ]
+
+        for title, dur in adm_tec_classes:
             cur.execute(
                 "INSERT INTO classes (module_id, title, duration_minutes) VALUES (12, %s, %s)",
-                (f"Direito Adm Aula {i}", 35),
+                (title, dur),
             )
 
         cur.execute(
