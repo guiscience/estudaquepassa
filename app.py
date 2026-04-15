@@ -1595,6 +1595,23 @@ def agenda():
     date_str = request.args.get("date", datetime.now().strftime("%Y-%m-%d"))
 
     conn = get_db_connection()
+
+    # Check if user has any schedule - if not, auto-generate
+    schedule_exists = conn.execute(
+        "SELECT COUNT(*) FROM user_progress WHERE user_id = ?",
+        (current_user.id,),
+    ).fetchone()[0]
+
+    if schedule_exists == 0:
+        # Auto-generate schedule on first access
+        from generate_schedule import generate_schedule_for_user
+
+        start_date = datetime.now().strftime("%Y-%m-%d")
+        generate_schedule_for_user(
+            current_user.id, start_date, current_user.effective_cargo_id
+        )
+        conn = get_db_connection()  # Re-connect after writes
+
     classes = conn.execute(
         """
         SELECT c.*, m.name AS module_name, COALESCE(up.is_completed, 0) AS is_completed
