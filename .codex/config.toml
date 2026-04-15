@@ -1,0 +1,7 @@
+[mcp_servers.railway]
+command = "npx"
+args = [ "-y", "@railway/mcp-server" ]
+
+[mcp_servers.github]
+type = "http"
+url = "https://api.githubcopilot.com/mcp/"

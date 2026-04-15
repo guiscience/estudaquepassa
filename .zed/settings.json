@@ -1,0 +1,19 @@
+{
+  "context_servers": {
+    "railway": {
+      "source": "custom",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@railway/mcp-server"
+      ],
+      "env": {}
+    },
+    "github": {
+      "source": "custom",
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {}
+    }
+  }
+}

@@ -88,6 +88,68 @@ def get_cargos():
     return cargos
 
 
+def get_concursos():
+    conn = get_db_connection()
+    if USE_PG:
+        cur = conn.cursor()
+        cur.execute("SELECT id, nome FROM concursos ORDER BY nome")
+        concursos = [{"id": r[0], "nome": r[1]} for r in cur.fetchall()]
+    else:
+        concursos = conn.execute("SELECT * FROM concursos ORDER BY nome").fetchall()
+    conn.close()
+    return concursos
+
+
+def get_bancas(concurso_id=None):
+    conn = get_db_connection()
+    if USE_PG:
+        cur = conn.cursor()
+        if concurso_id:
+            cur.execute(
+                "SELECT DISTINCT b.id, b.nome FROM bancas b JOIN modules m ON m.banca_id = b.id WHERE m.concurso_id = %s ORDER BY b.nome",
+                (concurso_id,),
+            )
+        else:
+            cur.execute("SELECT id, nome FROM bancas ORDER BY nome")
+        bancas = [{"id": r[0], "nome": r[1]} for r in cur.fetchall()]
+    else:
+        if concurso_id:
+            bancas = conn.execute(
+                "SELECT DISTINCT b.* FROM bancas b JOIN modules m ON m.banca_id = b.id WHERE m.concurso_id = ? ORDER BY b.nome",
+                (concurso_id,),
+            ).fetchall()
+        else:
+            bancas = conn.execute("SELECT * FROM bancas ORDER BY nome").fetchall()
+    conn.close()
+    return bancas
+
+
+def get_disciplinas(banca_id=None):
+    conn = get_db_connection()
+    if USE_PG:
+        cur = conn.cursor()
+        if banca_id:
+            cur.execute(
+                "SELECT DISTINCT id, name FROM modules WHERE banca_id = %s ORDER BY name",
+                (banca_id,),
+            )
+        else:
+            cur.execute("SELECT DISTINCT id, name FROM modules ORDER BY name")
+        disciplinas = [{"id": r[0], "name": r[1]} for r in cur.fetchall()]
+    else:
+        if banca_id:
+            disciplinas = conn.execute(
+                "SELECT DISTINCT id, name FROM modules WHERE banca_id = ? ORDER BY name",
+                (banca_id,),
+            ).fetchall()
+        else:
+            disciplinas = conn.execute(
+                "SELECT DISTINCT id, name FROM modules ORDER BY name"
+            ).fetchall()
+    conn.close()
+    return disciplinas
+
+
 # Auto-create database on first run
 import sys
 
@@ -99,13 +161,13 @@ if USE_PG:
         cur = conn.cursor()
 
         cur.execute(
-            """CREATE TABLE IF NOT EXISTS modules (id SERIAL PRIMARY KEY, name TEXT, cargo_id INTEGER)"""
+            """CREATE TABLE IF NOT EXISTS modules (id SERIAL PRIMARY KEY, name TEXT, cargo_id INTEGER, concurso_id INTEGER, banca_id INTEGER)"""
         )
         cur.execute(
             """CREATE TABLE IF NOT EXISTS classes (id SERIAL PRIMARY KEY, module_id INTEGER, title TEXT, duration_minutes INTEGER)"""
         )
         cur.execute(
-            """CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, username TEXT UNIQUE, password_hash TEXT, cargo_id INTEGER DEFAULT 1)"""
+            """CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, username TEXT UNIQUE, password_hash TEXT, cargo_id INTEGER DEFAULT 1, concurso_id INTEGER, banca_id INTEGER, disciplina_id INTEGER)"""
         )
         cur.execute(
             """CREATE TABLE IF NOT EXISTS user_progress (user_id INTEGER, class_id INTEGER, is_completed INTEGER DEFAULT 0, scheduled_date TEXT, PRIMARY KEY (user_id, class_id))"""
@@ -113,16 +175,30 @@ if USE_PG:
         cur.execute(
             """CREATE TABLE IF NOT EXISTS cargos (id SERIAL PRIMARY KEY, name TEXT)"""
         )
+        cur.execute(
+            """CREATE TABLE IF NOT EXISTS concursos (id SERIAL PRIMARY KEY, nome TEXT NOT NULL)"""
+        )
+        cur.execute(
+            """CREATE TABLE IF NOT EXISTS bancas (id SERIAL PRIMARY KEY, nome TEXT NOT NULL)"""
+        )
         cur.execute("SELECT COUNT(*) FROM classes")
         if cur.fetchone()[0] > 0:
             raise RuntimeError("DB_ALREADY_INITIALIZED")
+
+        cur.execute(
+            "INSERT INTO concursos (nome) VALUES ('TJ-SC - Tribunal de Justiça de Santa Catarina')"
+        )
+
+        cur.execute("INSERT INTO bancas (nome) VALUES ('FGV')")
+        cur.execute("INSERT INTO bancas (nome) VALUES ('CESPE')")
+        cur.execute("INSERT INTO bancas (nome) VALUES ('FCC')")
 
         cur.execute("INSERT INTO cargos (id, name) VALUES (1, 'Analista')")
         cur.execute("INSERT INTO cargos (id, name) VALUES (2, 'Tecnico')")
 
         # AFO - Analista (92 classes)
         cur.execute(
-            "INSERT INTO modules (id, name, cargo_id) VALUES (1, 'AFO - Administracao Financeira e Orcamentaria - Marcelo Adriano', 1)"
+            "INSERT INTO modules (id, name, cargo_id, concurso_id, banca_id) VALUES (1, 'AFO - Administracao Financeira e Orcamentaria - Marcelo Adriano', 1, 1, 1)"
         )
 
         afo_classes = [
@@ -255,7 +331,7 @@ if USE_PG:
 
         # Portuguese Analista - Douglas Wisniewski (104 classes)
         cur.execute(
-            "INSERT INTO modules (id, name, cargo_id) VALUES (2, 'Portugues - Douglas Wisniewski', 1)"
+            "INSERT INTO modules (id, name, cargo_id, concurso_id, banca_id) VALUES (2, 'Portugues - Douglas Wisniewski', 1, 1, 1)"
         )
 
         portuguese_classes = [
@@ -373,7 +449,7 @@ if USE_PG:
 
         # Shared modules - Informatics (Leo Matos)
         cur.execute(
-            "INSERT INTO modules (id, name, cargo_id) VALUES (3, 'Informatica e LGPD - Leo Matos', NULL)"
+            "INSERT INTO modules (id, name, cargo_id, concurso_id, banca_id) VALUES (3, 'Informatica e LGPD - Leo Matos', NULL, 1, 1)"
         )
 
         informatica_classes = [
@@ -422,7 +498,7 @@ if USE_PG:
             )
 
         cur.execute(
-            "INSERT INTO modules (id, name, cargo_id) VALUES (4, 'Administracao Geral - Fabio de Assis', 1)"
+            "INSERT INTO modules (id, name, cargo_id, concurso_id, banca_id) VALUES (4, 'Administracao Geral - Fabio de Assis', 1, 1, 1)"
         )
 
         adm_geral_classes = [
@@ -471,7 +547,7 @@ if USE_PG:
             )
 
         cur.execute(
-            "INSERT INTO modules (id, name, cargo_id) VALUES (5, 'Gestao de Pessoas - Fabio de Assis', 1)"
+            "INSERT INTO modules (id, name, cargo_id, concurso_id, banca_id) VALUES (5, 'Gestao de Pessoas - Fabio de Assis', 1, 1, 1)"
         )
 
         gestao_pessoas_classes = [
@@ -510,7 +586,7 @@ if USE_PG:
             )
 
         cur.execute(
-            "INSERT INTO modules (id, name, cargo_id) VALUES (6, 'Adm de Materiais - Fabio de Assis', 1)"
+            "INSERT INTO modules (id, name, cargo_id, concurso_id, banca_id) VALUES (6, 'Adm de Materiais - Fabio de Assis', 1, 1, 1)"
         )
 
         adm_materiais_classes = [
@@ -532,7 +608,7 @@ if USE_PG:
             )
 
         cur.execute(
-            "INSERT INTO modules (id, name, cargo_id) VALUES (7, 'Administracao Publica - Fabio de Assis', 1)"
+            "INSERT INTO modules (id, name, cargo_id, concurso_id, banca_id) VALUES (7, 'Administracao Publica - Fabio de Assis', 1, 1, 1)"
         )
 
         adm_publica_classes = [
@@ -554,7 +630,7 @@ if USE_PG:
             )
 
         cur.execute(
-            "INSERT INTO modules (id, name, cargo_id) VALUES (8, 'Transparencia e Controle - LAI', NULL)"
+            "INSERT INTO modules (id, name, cargo_id, concurso_id, banca_id) VALUES (8, 'Transparencia e Controle - LAI', NULL, 1, 1)"
         )
 
         transparencia_classes = [
@@ -582,7 +658,7 @@ if USE_PG:
             )
 
         cur.execute(
-            "INSERT INTO modules (id, name, cargo_id) VALUES (9, 'Etica e Gestao no Servico Publico - Nathan Pilonetto', NULL)"
+            "INSERT INTO modules (id, name, cargo_id, concurso_id, banca_id) VALUES (9, 'Etica e Gestao no Servico Publico - Nathan Pilonetto', NULL, 1, 1)"
         )
 
         etica_classes = [
@@ -625,7 +701,7 @@ if USE_PG:
 
         # Tecnico modules
         cur.execute(
-            "INSERT INTO modules (id, name, cargo_id) VALUES (10, 'Portugues - Janaina Souto (Tecnico)', 2)"
+            "INSERT INTO modules (id, name, cargo_id, concurso_id, banca_id) VALUES (10, 'Portugues - Janaina Souto (Tecnico)', 2, 1, 1)"
         )
 
         portuguese_tec_classes = [
@@ -696,7 +772,7 @@ if USE_PG:
             )
 
         cur.execute(
-            "INSERT INTO modules (id, name, cargo_id) VALUES (11, 'Direito Civil - Yegor Moreira (Tecnico)', 2)"
+            "INSERT INTO modules (id, name, cargo_id, concurso_id, banca_id) VALUES (11, 'Direito Civil - Yegor Moreira (Tecnico)', 2, 1, 1)"
         )
 
         civil_tec_classes = [
@@ -764,7 +840,7 @@ if USE_PG:
             )
 
         cur.execute(
-            "INSERT INTO modules (id, name, cargo_id) VALUES (12, 'Direito Administrativo - Matheus Carvalho (Tecnico)', 2)"
+            "INSERT INTO modules (id, name, cargo_id, concurso_id, banca_id) VALUES (12, 'Direito Administrativo - Matheus Carvalho (Tecnico)', 2, 1, 1)"
         )
 
         adm_tec_classes = [
@@ -810,7 +886,7 @@ if USE_PG:
             )
 
         cur.execute(
-            "INSERT INTO modules (id, name, cargo_id) VALUES (13, 'Direito Constitucional - Luciano Franco (Tecnico)', 2)"
+            "INSERT INTO modules (id, name, cargo_id, concurso_id, banca_id) VALUES (13, 'Direito Constitucional - Luciano Franco (Tecnico)', 2, 1, 1)"
         )
 
         const_tec_classes = [
@@ -950,7 +1026,7 @@ if USE_PG:
             )
 
         cur.execute(
-            "INSERT INTO modules (id, name, cargo_id) VALUES (14, 'Direito Penal - Lucas Henrique Favero (Tecnico)', 2)"
+            "INSERT INTO modules (id, name, cargo_id, concurso_id, banca_id) VALUES (14, 'Direito Penal - Lucas Henrique Favero (Tecnico)', 2, 1, 1)"
         )
 
         penal_tec_classes = [
@@ -1029,7 +1105,7 @@ if USE_PG:
             )
 
         cur.execute(
-            "INSERT INTO modules (id, name, cargo_id) VALUES (15, 'Direito Processual Penal - Priscilla Fernandes (Tecnico)', 2)"
+            "INSERT INTO modules (id, name, cargo_id, concurso_id, banca_id) VALUES (15, 'Direito Processual Penal - Priscilla Fernandes (Tecnico)', 2, 1, 1)"
         )
 
         proc_penal_tec_classes = [
@@ -1086,7 +1162,7 @@ if USE_PG:
             )
 
         cur.execute(
-            "INSERT INTO modules (id, name, cargo_id) VALUES (16, 'Direito Processual Civil - Raquel Bueno (Tecnico)', 2)"
+            "INSERT INTO modules (id, name, cargo_id, concurso_id, banca_id) VALUES (16, 'Direito Processual Civil - Raquel Bueno (Tecnico)', 2, 1, 1)"
         )
 
         proc_civil_tec_classes = [
@@ -1129,7 +1205,7 @@ if USE_PG:
             )
 
         cur.execute(
-            "INSERT INTO modules (id, name, cargo_id) VALUES (17, 'Informatica - Leo Matos (Tecnico)', 2)"
+            "INSERT INTO modules (id, name, cargo_id, concurso_id, banca_id) VALUES (17, 'Informatica - Leo Matos (Tecnico)', 2, 1, 1)"
         )
 
         info_tec_classes = [
@@ -1211,15 +1287,25 @@ login_manager.login_message_category = "error"
 
 
 class User(UserMixin):
-    def __init__(self, id, username, cargo_id, cargo_name=""):
+    def __init__(
+        self,
+        id,
+        username,
+        concurso_id=None,
+        banca_id=None,
+        disciplina_id=None,
+        concurso_nome="",
+    ):
         self.id = id
         self.username = username
-        self.cargo_id = cargo_id  # None-safe; treated as 1 if NULL
-        self.cargo_name = cargo_name
+        self.concurso_id = concurso_id
+        self.banca_id = banca_id
+        self.disciplina_id = disciplina_id
+        self.concurso_nome = concurso_nome
 
     @property
-    def effective_cargo_id(self):
-        return self.cargo_id if self.cargo_id is not None else 1
+    def effective_concurso_id(self):
+        return self.concurso_id if self.concurso_id is not None else 1
 
 
 @login_manager.user_loader
@@ -1227,9 +1313,9 @@ def load_user(user_id):
     conn = get_db_connection()
     row = conn.execute(
         """
-        SELECT u.*, c.name AS cargo_name
+        SELECT u.*, c.nome AS concurso_nome
         FROM users u
-        LEFT JOIN cargos c ON u.cargo_id = c.id
+        LEFT JOIN concursos c ON u.concurso_id = c.id
         WHERE u.id = ?
     """,
         (user_id,),
@@ -1237,7 +1323,12 @@ def load_user(user_id):
     conn.close()
     if row:
         return User(
-            row["id"], row["username"], row["cargo_id"], row["cargo_name"] or ""
+            row["id"],
+            row["username"],
+            row["concurso_id"],
+            row["banca_id"],
+            row["disciplina_id"],
+            row.get("concurso_nome", ""),
         )
     return None
 
@@ -1248,7 +1339,9 @@ def login():
     if current_user.is_authenticated:
         return redirect(url_for("index"))
 
-    cargos = get_cargos()
+    concursos = get_concursos()
+    bancas = get_bancas()
+    disciplinas = get_disciplinas()
 
     if request.method == "POST":
         action = request.form.get("action")
@@ -1257,29 +1350,59 @@ def login():
 
         if not username or not password:
             flash("Preencha todos os campos.", "error")
-            return render_template("login.html", cargos=cargos)
+            return render_template(
+                "login.html",
+                concursos=concursos,
+                bancas=bancas,
+                disciplinas=disciplinas,
+            )
 
         conn = get_db_connection()
 
         if action == "register":
-            cargo_id = int(request.form.get("cargo_id", 1))
+            concurso_id = (
+                int(request.form.get("concurso_id", 1))
+                if request.form.get("concurso_id")
+                else None
+            )
+            banca_id = (
+                int(request.form.get("banca_id"))
+                if request.form.get("banca_id")
+                else None
+            )
+            disciplina_id = (
+                int(request.form.get("disciplina_id"))
+                if request.form.get("disciplina_id")
+                else None
+            )
 
             if conn.execute(
                 "SELECT id FROM users WHERE username = ?", (username,)
             ).fetchone():
                 flash("Nome de usuario ja existe. Escolha outro.", "error")
                 conn.close()
-                return render_template("login.html", cargos=cargos)
+                return render_template(
+                    "login.html",
+                    concursos=concursos,
+                    bancas=bancas,
+                    disciplinas=disciplinas,
+                )
 
             conn.execute(
-                "INSERT INTO users (username, password_hash, cargo_id) VALUES (?, ?, ?)",
-                (username, generate_password_hash(password), cargo_id),
+                "INSERT INTO users (username, password_hash, concurso_id, banca_id, disciplina_id) VALUES (?, ?, ?, ?, ?)",
+                (
+                    username,
+                    generate_password_hash(password),
+                    concurso_id,
+                    banca_id,
+                    disciplina_id,
+                ),
             )
             conn.commit()
             row = conn.execute(
                 """
-                SELECT u.*, c.name AS cargo_name
-                FROM users u LEFT JOIN cargos c ON u.cargo_id = c.id
+                SELECT u.*, c.nome AS concurso_nome
+                FROM users u LEFT JOIN concursos c ON u.concurso_id = c.id
                 WHERE u.username = ?
             """,
                 (username,),
@@ -1287,7 +1410,12 @@ def login():
             conn.close()
             login_user(
                 User(
-                    row["id"], row["username"], row["cargo_id"], row["cargo_name"] or ""
+                    row["id"],
+                    row["username"],
+                    row.get("concurso_id"),
+                    row.get("banca_id"),
+                    row.get("disciplina_id"),
+                    row.get("concurso_nome", ""),
                 )
             )
             flash(f"Bem-vindo(a), {username}! Conta criada.", "success")
@@ -1296,8 +1424,8 @@ def login():
         else:  # login
             row = conn.execute(
                 """
-                SELECT u.*, c.name AS cargo_name
-                FROM users u LEFT JOIN cargos c ON u.cargo_id = c.id
+                SELECT u.*, c.nome AS concurso_nome
+                FROM users u LEFT JOIN concursos c ON u.concurso_id = c.id
                 WHERE u.username = ?
             """,
                 (username,),
@@ -1308,14 +1436,18 @@ def login():
                     User(
                         row["id"],
                         row["username"],
-                        row["cargo_id"],
-                        row["cargo_name"] or "",
+                        row.get("concurso_id"),
+                        row.get("banca_id"),
+                        row.get("disciplina_id"),
+                        row.get("concurso_nome", ""),
                     )
                 )
                 return redirect(url_for("index"))
             flash("Usuario ou senha incorretos.", "error")
 
-    return render_template("login.html", cargos=cargos)
+    return render_template(
+        "login.html", concursos=concursos, bancas=bancas, disciplinas=disciplinas
+    )
 
 
 @app.route("/logout")
@@ -1335,10 +1467,18 @@ def index():
     modules = conn.execute(
         """
         SELECT * FROM modules
-        WHERE cargo_id = ? OR cargo_id IS NULL
+        WHERE (concurso_id = ? OR concurso_id IS NULL)
+          AND (banca_id = ? OR ? IS NULL)
+          AND (id = ? OR ? IS NULL)
         ORDER BY id
     """,
-        (current_user.effective_cargo_id,),
+        (
+            current_user.concurso_id,
+            current_user.banca_id,
+            current_user.banca_id,
+            current_user.disciplina_id,
+            current_user.disciplina_id,
+        ),
     ).fetchall()
 
     today_str = datetime.now().strftime("%Y-%m-%d")
@@ -1478,17 +1618,24 @@ def toggle_class():
     )
     conn.commit()
 
-    # Totais específicos do cargo do usuário (módulos do cargo + compartilhados)
-    cid = current_user.effective_cargo_id
+    # Totais específicos do filtro do usuário
     total_minutes = (
         conn.execute(
             """
         SELECT SUM(c.duration_minutes)
         FROM classes c
         JOIN modules m ON c.module_id = m.id
-        WHERE m.cargo_id = ? OR m.cargo_id IS NULL
+        WHERE (m.concurso_id = ? OR m.concurso_id IS NULL)
+          AND (m.banca_id = ? OR ? IS NULL)
+          AND (m.id = ? OR ? IS NULL)
     """,
-            (cid,),
+            (
+                current_user.concurso_id,
+                current_user.banca_id,
+                current_user.banca_id,
+                current_user.disciplina_id,
+                current_user.disciplina_id,
+            ),
         ).fetchone()[0]
         or 0
     )
@@ -1501,9 +1648,18 @@ def toggle_class():
         JOIN modules m        ON c.module_id = m.id
         JOIN user_progress up ON c.id = up.class_id
         WHERE up.user_id = ? AND up.is_completed = 1
-          AND (m.cargo_id = ? OR m.cargo_id IS NULL)
+          AND (m.concurso_id = ? OR m.concurso_id IS NULL)
+          AND (m.banca_id = ? OR ? IS NULL)
+          AND (m.id = ? OR ? IS NULL)
     """,
-            (current_user.id, cid),
+            (
+                current_user.id,
+                current_user.concurso_id,
+                current_user.banca_id,
+                current_user.banca_id,
+                current_user.disciplina_id,
+                current_user.disciplina_id,
+            ),
         ).fetchone()[0]
         or 0
     )
@@ -1526,9 +1682,25 @@ def generate_schedule_route():
     from generate_schedule import generate_schedule_for_user
 
     start_date = datetime.now().strftime("%Y-%m-%d")
-    cargo_id = current_user.effective_cargo_id
-    days = generate_schedule_for_user(current_user.id, start_date, cargo_id)
+    concurso_id = current_user.concurso_id
+    days = generate_schedule_for_user(current_user.id, start_date, concurso_id)
     return jsonify({"success": True, "message": f"Cronograma gerado ({days} dias)!"})
+
+
+@app.route("/api/get_bancas", methods=["POST"])
+def api_get_bancas():
+    concurso_id = request.form.get("concurso_id")
+    bancas = get_bancas(concurso_id=int(concurso_id) if concurso_id else None)
+    return jsonify({"bancas": [{"id": b["id"], "nome": b["nome"]} for b in bancas]})
+
+
+@app.route("/api/get_disciplinas", methods=["POST"])
+def api_get_disciplinas():
+    banca_id = request.form.get("banca_id")
+    disciplinas = get_disciplinas(banca_id=int(banca_id) if banca_id else None)
+    return jsonify(
+        {"disciplinas": [{"id": d["id"], "name": d["name"]} for d in disciplinas]}
+    )
 
 
 if __name__ == "__main__":
