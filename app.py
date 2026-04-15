@@ -627,6 +627,68 @@ if USE_PG:
         cur.execute(
             "INSERT INTO modules (id, name, cargo_id) VALUES (10, 'Portugues - Janaina Souto (Tecnico)', 2)"
         )
+
+        portuguese_tec_classes = [
+            ("Ortografia", 68),
+            ("Questoes de Ortografia", 50),
+            ("Classes Gramaticais e suas funcoes sintaticas", 62),
+            ("Questoes de Classes de Palavras", 21),
+            ("Verbos", 69),
+            ("Questoes de Verbos", 47),
+            ("Termos da oracao", 85),
+            ("Concordancia Nominal e Concordancia Verbal - Parte I", 26),
+            ("Concordancia Nominal e Concordancia Verbal - Parte II", 8),
+            (
+                "Questoes comentadas Concordancia Nominal e Concordancia Verbal e termos da oracao",
+                54,
+            ),
+            ("Colocacao Pronominal", 65),
+            ("Questoes de Pronomes", 46),
+            ("Regencia e Crase", 70),
+            ("Questoes de Regencia e Crase", 52),
+            ("Vozes Verbais e SE", 72),
+            ("Pronomes Relativos e QUE", 68),
+            ("Questoes de Funcoes do Que e do Se", 58),
+            ("Periodo Composto/Oracoes Coordenadas e Subordinadas", 93),
+            ("Questoes de Oracoes Coordenadas e Subordinadas", 49),
+            ("Pontuacao", 64),
+            ("Questoes de Pontuacao", 60),
+            ("Interpretacao de texto", 35),
+            ("Contexto, coesao, denotacao, conotacao e intertextualidade", 34),
+            ("Dominio da tematica dos paragrafos", 25),
+            ("Tipos e generos textuais", 39),
+            ("Generos textuais e os tipos de coesao", 29),
+            ("Figuras de linguagem - Parte I", 38),
+            ("Figuras de linguagem - Parte II", 28),
+            ("Funcoes da linguagem, tipos de discurso e variacoes linguisticas", 28),
+            ("Questoes de Interpretacao de texto e tipologia textual", 30),
+            ("Revisao Final em Questoes FGV - Parte I", 41),
+            ("Revisao Final em Questoes FGV - Parte II", 44),
+            ("Revisao Final em Questoes FGV - Parte III", 45),
+            ("Revisao Final em Questoes FGV - Parte IV", 53),
+            ("Revisao Final em Questoes FGV - Parte V", 40),
+            ("Revisao Final em Questoes FGV - Parte VI", 35),
+            ("Revisao Final em Questoes FGV - Parte VII", 33),
+            ("Revisao Final em Questoes FGV - Parte VIII", 44),
+            ("Revisao Final em Questoes FGV - Parte IX", 25),
+            ("Revisao Final em Questoes FGV - Parte X", 45),
+            ("Revisao Final em Questoes FGV - Parte XI", 32),
+            ("Revisao Final em Questoes FGV - Parte XII", 36),
+            ("Revisao Final em Questoes FGV - Parte XIII", 29),
+            ("Revisao Final em Questoes FGV - Parte XIV", 44),
+            ("Revisao Final em Questoes FGV - Parte XV", 34),
+            ("Revisao Final em Questoes FGV - Parte XVI", 26),
+            ("Revisao Final em Questoes FGV - Parte XVII", 45),
+            ("Revisao Final em Questoes FGV - Parte XVIII", 37),
+            ("Revisao Final em Questoes FGV - Parte XIX", 30),
+            ("Revisao Final em Questoes FGV - Parte XX", 43),
+        ]
+
+        for title, dur in portuguese_tec_classes:
+            cur.execute(
+                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (10, %s, %s)",
+                (title, dur),
+            )
         for i in range(1, 16):
             cur.execute(
                 "INSERT INTO classes (module_id, title, duration_minutes) VALUES (10, %s, %s)",
@@ -636,10 +698,69 @@ if USE_PG:
         cur.execute(
             "INSERT INTO modules (id, name, cargo_id) VALUES (11, 'Direito Civil - Yegor Moreira (Tecnico)', 2)"
         )
-        for i in range(1, 13):
+
+        civil_tec_classes = [
+            ("LINDB - V vigencia e Revogacao das Leis", 36),
+            ("LINDB - Interpretacao e Integracao das Leis", 25),
+            ("LINDB - Conflitos das Leis no Tempo e no Espaco", 36),
+            ("Questoes - LINDB", 67),
+            ("Pessoas naturais: Conceito e Personalidade Juridica", 16),
+            ("Pessoas naturais: Capacidade Juridica e Legitimacao", 14),
+            ("Pessoas naturais: Incapacidades", 20),
+            ("Pessoas naturais: Cessacao da incapacidade", 20),
+            ("Pessoas naturais: Extincao da personalidade natural", 23),
+            ("Pessoas naturais: Ausencia - Parte 1", 20),
+            ("Pessoas naturais: Ausencia - Parte 2", 22),
+            ("Pessoas naturais: Nome civil e Estado civil", 18),
+            ("Pessoas naturais: Domicilio", 22),
+            ("Questoes - Pessoas Naturais", 68),
+            ("Pessoas juridicas: Disposicoes Gerais - Teorias", 6),
+            ("Pessoas juridicas: Disposicoes Gerais - Classificacao", 10),
+            ("Pessoas juridicas: Conceito e Elementos Caracterizadores", 5),
+            ("Pessoas juridicas: Constituicao", 10),
+            ("Pessoas juridicas: Extincao", 6),
+            ("Pessoas juridicas: Associacoes", 20),
+            ("Pessoas juridicas: Fundacoes", 24),
+            ("Pessoas juridicas: Grupos despersonalizados", 12),
+            ("Pessoas juridicas: Desconsideracao da personalidade juridica", 37),
+            ("Pessoas juridicas: Responsabilidade da pessoa juridica e dos socios", 3),
+            ("Pessoas juridicas: Capacidade e direitos da personalidade - Parte 1", 27),
+            ("Pessoas juridicas: Capacidade e direitos da personalidade - Parte 2", 32),
+            ("Pessoas juridicas: Sociedades de fato", 10),
+            ("Questoes - Personalidade Juridica", 83),
+            ("Dos Bens moveis, imoveis, fungiveis e infungiveis", 20),
+            ("Dos Bens - Art. 86 ao Art. 103", 32),
+            ("Bens Corporeos e incorporeos", 3),
+            ("Bens no comercio e fora do comercio", 20),
+            ("Questoes - Domicilio e Bens", 55),
+            ("Fato juridico", 20),
+            ("Negocio juridico: Disposicoes gerais", 20),
+            ("Negocio juridico: Classificacao e interpretacao", 32),
+            ("Negocio juridico: Elemento do Negocio Juridico", 6),
+            ("Negocio juridico: Representacao do Negocio Juridico", 14),
+            ("Negocio juridico: Condicao, termo e encargo", 30),
+            ("Negocio juridico: Defeitos - Conceito e Erro", 36),
+            ("Negocio juridico: Defeitos - Coacao, Lesao e Estado de Perigo", 32),
+            ("Negocio juridico: Defeitos - Fraude Contra Credores", 31),
+            ("Negocio Juridico: Simulacao", 16),
+            ("Negocio juridico: Defeitos - Dolo", 26),
+            (
+                "Negocio juridico: Existecia, eficacia, validade, invalidade e nulidade",
+                29,
+            ),
+            (
+                "Questoes - Atos e Fatos Juridicos e Teoria Geral do Negocio Juridico",
+                35,
+            ),
+            ("Atos juridicos licitos e ilicitos", 24),
+            ("Questoes - Atos Ilicitos", 41),
+            ("Lei 12.682/2012 e Decreto 8.539/2015", 30),
+        ]
+
+        for title, dur in civil_tec_classes:
             cur.execute(
                 "INSERT INTO classes (module_id, title, duration_minutes) VALUES (11, %s, %s)",
-                (f"Direito Civil Aula {i}", 35),
+                (title, dur),
             )
 
         cur.execute(
