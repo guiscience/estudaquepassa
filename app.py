@@ -95,7 +95,10 @@ def get_concursos():
         cur.execute("SELECT id, nome FROM concursos ORDER BY nome")
         concursos = [{"id": r[0], "nome": r[1]} for r in cur.fetchall()]
     else:
-        concursos = conn.execute("SELECT * FROM concursos ORDER BY nome").fetchall()
+        try:
+            concursos = conn.execute("SELECT * FROM concursos ORDER BY nome").fetchall()
+        except:
+            concursos = []
     conn.close()
     return concursos
 
@@ -1331,15 +1334,18 @@ class User(UserMixin):
 @login_manager.user_loader
 def load_user(user_id):
     conn = get_db_connection()
-    row = conn.execute(
-        """
-        SELECT u.*, c.nome AS concurso_nome
-        FROM users u
-        LEFT JOIN concursos c ON u.concurso_id = c.id
-        WHERE u.id = ?
-    """,
-        (user_id,),
-    ).fetchone()
+    try:
+        row = conn.execute(
+            """
+            SELECT u.*, c.nome AS concurso_nome
+            FROM users u
+            LEFT JOIN concursos c ON u.concurso_id = c.id
+            WHERE u.id = ?
+        """,
+            (user_id,),
+        ).fetchone()
+    except:
+        row = None
     conn.close()
     if row:
         return User(
