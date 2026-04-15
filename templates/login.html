@@ -3,118 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - TJ-SC 2026</title>
-    <meta name="description" content="Acesse sua plataforma pessoal de estudos para o TJ-SC 2026.">
+    <title>Login - EstudaQuePassa</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/login.css') }}">
+    <style>
+        body { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 1rem; }
+        .qc-login-container { width: 100%; max-width: 420px; }
+        .qc-login-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; }
+        .qc-login-header { text-align: center; margin-bottom: 2rem; }
+        .qc-login-header h1 { font-size: 2rem; font-weight: 800; background: linear-gradient(to right, #60a5fa, #34d399); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .qc-login-header p { color: var(--text-muted); margin-top: 0.5rem; }
+        .qc-form-group { margin-bottom: 1.25rem; }
+        .qc-form-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem; font-weight: 500; }
+        .qc-form-input { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1rem; color: var(--text-main); font-size: 1rem; }
+        .qc-form-input:focus { outline: none; border-color: var(--primary); }
+        .qc-btn-login { width: 100%; background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; border: none; border-radius: 8px; padding: 0.875rem; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .qc-btn-login:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); }
+        .qc-login-divider { text-align: center; margin: 1.5rem 0; color: var(--text-muted); position: relative; }
+        .qc-login-divider::before, .qc-login-divider::after { content: ''; position: absolute; top: 50%; width: 40%; height: 1px; background: var(--border); }
+        .qc-login-divider::before { left: 0; }
+        .qc-login-divider::after { right: 0; }
+        .qc-btn-register { width: 100%; background: transparent; color: var(--primary); border: 1px solid var(--primary); border-radius: 8px; padding: 0.875rem; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .qc-btn-register:hover { background: rgba(59, 130, 246, 0.1); }
+        .qc-login-footer { text-align: center; margin-top: 1.5rem; font-size: 0.85rem; color: var(--text-muted); }
+        .flash-msg { padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.9rem; }
+        .flash-error { background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; }
+        .flash-success { background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.3); color: #34d399; }
+    </style>
 </head>
-<body class="login-page">
-    <div class="container">
-        {% set header_title = 'TJ-SC 2026' %}
-        {% set header_subtitle = 'Plataforma pessoal de estudos' %}
-        {% set show_user_badge = false %}
-        {% set show_nav = false %}
-        {% include 'partials/header.html' %}
-        <main class="login-main">
-            <div class="login-wrap">
-                <div class="glass-card login-card">
+<body>
+    <div class="qc-login-container">
+        <div class="qc-login-card">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% for category, msg in messages %}
+                    <div class="flash-msg flash-{{ category }}">{{ msg }}</div>
+                {% endfor %}
+            {% endwith %}
 
-                    {% with messages = get_flashed_messages(with_categories=true) %}
-                        {% for category, msg in messages %}
-                            <div class="flash-msg flash-{{ category }}">{{ msg }}</div>
-                        {% endfor %}
-                    {% endwith %}
+            <div class="qc-login-header">
+                <h1>EstudaQuePassa</h1>
+                <p>Acesse sua plataforma de estudos</p>
+            </div>
 
-<form method="POST" action="{{ url_for('login') }}" id="auth-form" autocomplete="on">
-                <div class="form-group">
+            <form method="POST" action="{{ url_for('login') }}" id="auth-form" autocomplete="on">
+                <div class="qc-form-group">
                     <label for="username">Nome de usuário</label>
-                    <input
-                        type="text"
-                        id="username"
-                        name="username"
-                        placeholder="ex: joao_silva"
-                        autocomplete="username"
-                        required
-                        autofocus
-                    >
+                    <input type="text" id="username" name="username" placeholder="seu_usuario" class="qc-form-input" required autofocus>
                 </div>
 
-                <div class="form-group">
+                <div class="qc-form-group">
                     <label for="password">Senha</label>
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        placeholder="••••••••"
-                        autocomplete="current-password"
-                        required
-                    >
+                    <input type="password" id="password" name="password" placeholder="••••••••" class="qc-form-input" required>
                 </div>
 
-                <button type="submit" name="action" value="login" class="btn-login" id="btn-login">
-                    Entrar
-                </button>
-
-                <div class="divider">ou</div>
-
-                <button type="button" class="btn-register" id="btn-toggle-register">
-                    Criar nova conta
-                </button>
+                <button type="submit" name="action" value="login" class="qc-btn-login">Entrar</button>
             </form>
 
-            <form method="POST" action="{{ url_for('login') }}" id="register-form" autocomplete="on" style="display: none;">
+            <div class="qc-login-divider">ou</div>
+
+            <button type="button" class="qc-btn-register" id="btn-toggle-register">Criar nova conta</button>
+
+            <form method="POST" action="{{ url_for('login') }}" id="register-form" autocomplete="on" style="display: none; margin-top: 1.5rem;" class="qc-register-form">
                 <input type="hidden" name="action" value="register">
-                <div class="form-group">
+                <div class="qc-form-group">
                     <label for="reg-username">Nome de usuário</label>
-                    <input
-                        type="text"
-                        id="reg-username"
-                        name="username"
-                        placeholder="ex: joao_silva"
-                        autocomplete="username"
-                        required
-                        autofocus
-                    >
+                    <input type="text" id="reg-username" name="username" placeholder="seu_usuario" class="qc-form-input" required autofocus>
                 </div>
 
-                <div class="form-group">
+                <div class="qc-form-group">
                     <label for="reg-password">Senha</label>
-                    <input
-                        type="password"
-                        id="reg-password"
-                        name="password"
-                        placeholder="••••••••"
-                        autocomplete="new-password"
-                        required
-                    >
+                    <input type="password" id="reg-password" name="password" placeholder="••••••••" class="qc-form-input" required>
                 </div>
 
-                <div class="form-group">
+                <div class="qc-form-group">
                     <label for="cargo_id">Cargo pretendido</label>
-                    <select id="cargo_id" name="cargo_id" class="form-control" required>
+                    <select id="cargo_id" name="cargo_id" class="qc-form-input" required style="cursor: pointer;">
                         {% for cargo in cargos %}
                         <option value="{{ cargo.id }}">{{ cargo.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
 
-                <button type="submit" class="btn-register" style="background: var(--primary); color: #fff; border: none;">
-                    Criar conta
-                </button>
+                <button type="submit" class="qc-btn-login">Criar conta</button>
             </form>
 
-
-                    <p class="login-footer">
-                        Cada conta tem seu próprio progresso e cronograma de estudos.
-                    </p>
-                </div>
-            </div>
-        </main>
-        {% include 'partials/footer.html' %}
+            <p class="qc-login-footer">
+                Cada conta tem seu próprio progresso e cronograma de estudos.
+            </p>
         </div>
+    </div>
     <script src="{{ url_for('static', filename='js/pages/login.js') }}"></script>
 </body>
 </html>

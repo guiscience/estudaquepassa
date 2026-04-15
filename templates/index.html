@@ -3,161 +3,200 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plataforma de Estudos TJ-SC 2026</title>
+    <title>EstudaQuePassa - TJ-SC 2026</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <div class="container">
-        {% set header_title = 'TJ-SC 2026 Tracker' %}
-        {% set header_subtitle = 'Seu planejamento estratégico focado 100% no edital e aulas do Focus' %}
+    <div class="qc-container">
+        {% set header_title = 'TJ-SC 2026' %}
+        {% set header_subtitle = 'Planejamento estratégico de estudos' %}
         {% set show_user_badge = true %}
         {% set show_nav = true %}
         {% set active_page = 'index' %}
         {% include 'partials/header.html' %}
 
-        <section class="filter-bar" style="margin: 1rem 0; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 12px; display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
-            <span style="color: var(--text-muted); font-weight: 600;">Filtrar por:</span>
-            <select id="filter-banca" class="form-control" style="padding: 0.5rem; border-radius: 8px; background: var(--bg); color: var(--text); border: 1px solid var(--border);">
-                <option value="">Todas as Bancas</option>
-                <option value="1">FGV</option>
-                <option value="2">CESPE</option>
-                <option value="3">FCC</option>
-            </select>
-            <select id="filter-disciplina" class="form-control" style="padding: 0.5rem; border-radius: 8px; background: var(--bg); color: var(--text); border: 1px solid var(--border);">
-                <option value="">Todas as Disciplinas</option>
-                {% for mod in study_data %}
-                <option value="{{ mod.id }}">{{ mod.name }}</option>
-                {% endfor %}
-            </select>
-            <button onclick="applyFilter()" style="padding: 0.5rem 1rem; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Aplicar</button>
-        </section>
-
-        <section class="dashboard-grid">
-            <!-- Daily Mission Summary -->
-            <a href="/agenda" style="text-decoration: none; color: inherit;">
-                <div class="glass-card stat-box" style="border: 1px solid var(--primary); background: rgba(59, 130, 246, 0.05);">
-                    <h3>Sua Missão Hoje</h3>
-                    <div class="stat-value primary-text" id="daily-mission-count">--</div>
-                    <p style="margin-top: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">Aulas para cumprir sua meta agora</p>
+        <!-- Stats Row -->
+        <div class="qc-stats-row">
+            <div class="qc-stat-card">
+                <div class="qc-stat-icon" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
                 </div>
-            </a>
-            <!-- Countdown Timer -->
-            <div class="glass-card stat-box">
-                <h3>Tempo para a Prova</h3>
-                <div class="stat-value">
-                    <span id="days" class="primary-text">--</span>d 
-                    <span id="hours">--</span>h 
-                    <span id="minutes">--</span>m
+                <div class="qc-stat-info">
+                    <span class="qc-stat-value">{{ today_classes_count|default(0) }}</span>
+                    <span class="qc-stat-label">Aulas Hoje</span>
                 </div>
-                <p style="margin-top: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">28 de Junho de 2026</p>
             </div>
+            
+            <div class="qc-stat-card">
+                <div class="qc-stat-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <div class="qc-stat-info">
+                    <span class="qc-stat-value" id="days">--</span>
+                    <span class="qc-stat-label">Dias para Prova</span>
+                </div>
+            </div>
+            
+            <div class="qc-stat-card">
+                <div class="qc-stat-icon" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                </div>
+                <div class="qc-stat-info">
+                    <span class="qc-stat-value" id="overall-progress-text">
+                        {% if total_minutes > 0 %}
+                            {{ "%.1f"|format((completed_minutes / total_minutes) * 100) }}%
+                        {% else %}
+                            0%
+                        {% endif %}
+                    </span>
+                    <span class="qc-stat-label">Progresso</span>
+                </div>
+            </div>
+            
+            <div class="qc-stat-card">
+                <div class="qc-stat-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                </div>
+                <div class="qc-stat-info">
+                    <span class="qc-stat-value" id="daily-goal">--</span>
+                    <span class="qc-stat-label">Meta Diária</span>
+                </div>
+            </div>
+        </div>
 
-            <!-- Overall Progress -->
-            <div class="glass-card stat-box">
-                <h3>Progresso Geral do Edital</h3>
-                <div class="stat-value accent-text" id="overall-progress-text">
+        <!-- Filter Bar -->
+        <div class="qc-filter-bar">
+            <div class="qc-filter-group">
+                <label>Banca:</label>
+                <select id="filter-banca" class="qc-select">
+                    <option value="">Todas</option>
+                    <option value="1">FGV</option>
+                    <option value="2">CESPE</option>
+                    <option value="3">FCC</option>
+                </select>
+            </div>
+            <div class="qc-filter-group">
+                <label>Disciplina:</label>
+                <select id="filter-disciplina" class="qc-select">
+                    <option value="">Todas</option>
+                    {% for mod in study_data %}
+                    <option value="{{ mod.id }}">{{ mod.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button onclick="applyFilter()" class="qc-btn-primary">Filtrar</button>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="qc-progress-section">
+            <div class="qc-progress-header">
+                <span>Progresso Geral do Edital</span>
+                <span id="qc-progress-percent">
                     {% if total_minutes > 0 %}
                         {{ "%.1f"|format((completed_minutes / total_minutes) * 100) }}%
                     {% else %}
                         0%
                     {% endif %}
-                </div>
-                <div class="progress-container">
-                    <div class="progress-bar" id="overall-progress-bar" style="width: {% if total_minutes > 0 %}{{ (completed_minutes / total_minutes) * 100 }}%{% else %}0%{% endif %}"></div>
-                </div>
-                <p style="margin-top: 0.5rem; color: var(--text-muted); font-size: 0.8rem;">Baseado na duração das aulas</p>
+                </span>
             </div>
-
-            <!-- Daily Goal -->
-            <div class="glass-card stat-box" id="daily-goal-box">
-                <h3>Meta Mínima Diária</h3>
-                <div class="stat-value primary-text" id="daily-goal">--</div>
-                <p id="daily-goal-desc" style="margin-top: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">Calculando...</p>
+            <div class="qc-progress-track">
+                <div class="qc-progress-fill" id="overall-progress-bar" style="width: {% if total_minutes > 0 %}{{ (completed_minutes / total_minutes) * 100 }}%{% else %}0%{% endif %}"></div>
             </div>
-        </section>
+            <div class="qc-progress-meta">
+                <span>{{ completed_minutes|default(0) }} / {{ total_minutes|default(0) }} minutos</span>
+                <span>28 de Junho de 2026</span>
+            </div>
+        </div>
 
-        <section class="modules-section">
-            <h2>Módulos de Estudo (Focus Concursos)</h2>
-            <div class="modules-grid">
+        <!-- Modules List -->
+        <div class="qc-modules-container">
+            <h2 class="qc-section-title">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                Módulos de Estudo
+            </h2>
+            
+            <div class="qc-modules-list">
                 {% for mod in study_data %}
-                <div class="glass-card module-card">
-                    <h3>{{ mod.name }}</h3>
-                    <ul class="class-list">
+                <div class="qc-module-card">
+                    <div class="qc-module-header">
+                        <h3>{{ mod.name }}</h3>
+                        <span class="qc-module-stats">
+                            {% set mod_completed = namespace(count=0) %}
+                            {% for cls in mod.classes %}
+                                {% if cls.is_completed %}
+                                    {% set mod_completed.count = mod_completed.count + 1 %}
+                                {% endif %}
+                            {% endfor %}
+                            {{ mod_completed.count }}/{{ mod.classes|length }}
+                        </span>
+                    </div>
+                    <div class="qc-module-progress">
+                        <div class="qc-progress-track" style="height: 4px;">
+                            <div class="qc-progress-fill" style="width: {% if mod.classes|length > 0 %}{{ (mod_completed.count / mod.classes|length) * 100 }}%{% else %}0%{% endif %}"></div>
+                        </div>
+                    </div>
+                    <ul class="qc-class-list">
                         {% for cls in mod.classes %}
-                        <li class="class-item">
-                            <label class="custom-checkbox">
+                        <li class="qc-class-item">
+                            <label class="qc-checkbox">
                                 <input type="checkbox" class="class-status-checkbox" data-id="{{ cls.id }}" {% if cls.is_completed %}checked{% endif %}>
-                                <span class="checkmark"></span>
-                                <span class="class-title {% if cls.is_completed %}checked-text{% endif %}">{{ cls.title }}</span>
-                                <span class="class-duration">{{ cls.duration_minutes }}m</span>
+                                <span class="qc-checkbox-mark"></span>
+                                <span class="qc-class-title {% if cls.is_completed %}qc-completed{% endif %}">{{ cls.title }}</span>
                             </label>
+                            <span class="qc-class-duration">{{ cls.duration_minutes }}m</span>
                         </li>
-                        {% else %}
-                        <p style="color: var(--text-muted); font-size: 0.9rem; text-align: center;">Nenhuma aula cadastrada ainda.</p>
                         {% endfor %}
                     </ul>
                 </div>
                 {% endfor %}
             </div>
-        </section>
+        </div>
+
         {% include 'partials/footer.html' %}
     </div>
 
-    <!-- Pass initial data to JS -->
     <script>
-        // Trigger initial calculation
-        setTimeout(() => {
-            // To be safe, we replicate the initial daily goal calculation here since main.js only updates on change
-            const initialTotal = {{ total_minutes|default(0) }};
-            const initialCompleted = {{ completed_minutes|default(0) }};
-            
-            // Set today's mission count
-            document.getElementById('daily-mission-count').innerText = "{{ today_classes_count|default(0) }}";
-
-            const examDate = new Date('2026-06-28T00:00:00');
+        const examDate = new Date('2026-06-28T00:00:00');
+        
+        function updateTimer() {
             const now = new Date();
-            const daysLeft = Math.ceil((examDate - now) / (1000 * 60 * 60 * 24));
-            const minutesRemaining = initialTotal - initialCompleted;
-            
-            if (daysLeft > 0 && minutesRemaining > 0) {
-                const minsPerDay = Math.ceil(minutesRemaining / daysLeft);
-                const hrs = Math.floor(minsPerDay / 60);
-                const rMins = minsPerDay % 60;
-                
-                let timeStr = "";
-                if (hrs > 0) timeStr += `${hrs}h`;
-                if (rMins > 0) timeStr += `${rMins}m`;
-                
-                document.getElementById('daily-goal').innerText = timeStr || "0m";
-                document.getElementById('daily-goal-desc').innerText = "Por dia para fechar o edital";
-            } else if (minutesRemaining <= 0 && initialTotal > 0) {
-                document.getElementById('daily-goal').innerText = "Meta Atingida!";
-                document.getElementById('daily-goal').classList.remove('primary-text');
-                document.getElementById('daily-goal').classList.add('accent-text');
-                document.getElementById('daily-goal-desc').innerText = "Revisar conteúdo!";
-            } else if (initialTotal === 0) {
-                 document.getElementById('daily-goal').innerText = "N/A";
-                 document.getElementById('daily-goal-desc').innerText = "Nenhuma aula inserida";
-            } else {
-                 document.getElementById('daily-goal').innerText = "Prova Hoje!";
+            const diff = examDate - now;
+            if (diff <= 0) {
+                document.getElementById('days').innerText = '0';
+                return;
             }
-        }, 100);
-    </script>
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    <script>
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            document.getElementById('days').innerText = days;
+        }
+        setInterval(updateTimer, 60000);
+        updateTimer();
+
+        const initialTotal = {{ total_minutes|default(0) }};
+        const initialCompleted = {{ completed_minutes|default(0) }};
+        const daysLeft = Math.ceil((examDate - new Date()) / (1000 * 60 * 60 * 24));
+        const minutesRemaining = initialTotal - initialCompleted;
+        
+        if (daysLeft > 0 && minutesRemaining > 0) {
+            const minsPerDay = Math.ceil(minutesRemaining / daysLeft);
+            const hrs = Math.floor(minsPerDay / 60);
+            const rMins = minsPerDay % 60;
+            document.getElementById('daily-goal').innerText = (hrs > 0 ? hrs + 'h ' : '') + rMins + 'm';
+        } else if (minutesRemaining <= 0 && initialTotal > 0) {
+            document.getElementById('daily-goal').innerText = 'Concluído!';
+        }
+
         function applyFilter() {
+            const params = new URLSearchParams();
             const bancaId = document.getElementById('filter-banca').value;
             const disciplinaId = document.getElementById('filter-disciplina').value;
-            
-            const params = new URLSearchParams();
             if (bancaId) params.set('banca', bancaId);
             if (disciplinaId) params.set('disciplina', disciplinaId);
-            
             window.location.href = '/?' + params.toString();
         }
     </script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>

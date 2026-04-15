@@ -1,23 +1,74 @@
+.qc-agenda-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
 
-.agenda-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 2rem; }
-.date-badge { background: var(--primary); color: white; padding: 0.2rem 1rem; border-radius: 99px; font-size: 0.9rem; font-weight: 700; }
+.qc-agenda-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
 
-.mission-status { margin-bottom: 2rem; }
+.qc-agenda-title h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
 
-.agenda-item { display: flex; flex-direction: column; gap: 0.5rem; }
-.module-tag { font-size: 0.75rem; color: #60a5fa; text-transform: uppercase; font-weight: 700; }
+.qc-badge-success {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 99px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
 
-.preview-bar { display: flex; gap: 0.5rem; margin-top: 2rem; overflow-x: auto; padding-bottom: 1rem; }
-.preview-card { min-width: 150px; text-align: center; cursor: pointer; }
+.qc-badge-rest {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-muted);
+  padding: 0.5rem 1rem;
+  border-radius: 99px;
+  font-size: 0.9rem;
+}
 
-@media (max-width: 900px) {
-    .agenda-header {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 0.75rem;
-    }
+.qc-preview-section {
+  margin-top: 2rem;
+}
 
-    .date-badge {
-        align-self: flex-start;
-    }
+.qc-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.qc-preview-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem;
+  text-decoration: none;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.qc-preview-card:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.qc-preview-date {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.qc-preview-link {
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 0.85rem;
 }

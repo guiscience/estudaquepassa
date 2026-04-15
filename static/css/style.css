@@ -394,3 +394,300 @@ h1 {
     font-size: 2rem;
   }
 }
+
+/* QConcursos Style Overrides */
+.qc-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.qc-stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.qc-stat-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.qc-stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.qc-stat-icon svg {
+  color: white;
+}
+
+.qc-stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.qc-stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.2;
+}
+
+.qc-stat-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.qc-filter-bar {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.qc-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.qc-filter-group label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.qc-select {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  color: var(--text-main);
+  font-size: 0.9rem;
+  min-width: 150px;
+  cursor: pointer;
+}
+
+.qc-select:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.qc-btn-primary {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.qc-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.qc-progress-section {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.qc-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+.qc-progress-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 999px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.qc-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #10b981);
+  border-radius: 999px;
+  transition: width 0.5s ease;
+}
+
+.qc-progress-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.qc-modules-container {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.qc-section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: var(--text-main);
+}
+
+.qc-section-title svg {
+  color: var(--primary);
+}
+
+.qc-modules-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.qc-module-card {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem;
+}
+
+.qc-module-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.qc-module-header h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #60a5fa;
+}
+
+.qc-module-stats {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.25rem 0.75rem;
+  border-radius: 99px;
+}
+
+.qc-module-progress {
+  margin-bottom: 1rem;
+}
+
+.qc-class-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.qc-class-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.qc-class-item:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.qc-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  flex: 1;
+}
+
+.qc-checkbox input {
+  display: none;
+}
+
+.qc-checkbox-mark {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--text-muted);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.qc-checkbox input:checked + .qc-checkbox-mark {
+  background: #10b981;
+  border-color: #10b981;
+}
+
+.qc-checkbox input:checked + .qc-checkbox-mark::after {
+  content: '✓';
+  color: white;
+  font-size: 12px;
+}
+
+.qc-class-title {
+  font-size: 0.9rem;
+  color: var(--text-main);
+}
+
+.qc-class-title.qc-completed {
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+.qc-class-duration {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+@media (max-width: 768px) {
+  .qc-stats-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .qc-filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .qc-select {
+    width: 100%;
+  }
+}
