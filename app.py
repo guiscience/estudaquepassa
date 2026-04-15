@@ -97,6 +97,14 @@ if USE_PG:
     try:
         conn = psycopg.connect(DB_PATH)
         cur = conn.cursor()
+
+        # Drop and recreate tables
+        cur.execute("DROP TABLE IF EXISTS user_progress CASCADE")
+        cur.execute("DROP TABLE IF EXISTS classes CASCADE")
+        cur.execute("DROP TABLE IF EXISTS modules CASCADE")
+        cur.execute("DROP TABLE IF EXISTS users CASCADE")
+        cur.execute("DROP TABLE IF EXISTS cargos CASCADE")
+
         cur.execute(
             """CREATE TABLE IF NOT EXISTS modules (id SERIAL PRIMARY KEY, name TEXT, cargo_id INTEGER)"""
         )
@@ -112,9 +120,6 @@ if USE_PG:
         cur.execute(
             """CREATE TABLE IF NOT EXISTS cargos (id SERIAL PRIMARY KEY, name TEXT)"""
         )
-
-        cur.execute("DELETE FROM classes")
-        cur.execute("DELETE FROM modules")
 
         cur.execute("INSERT INTO cargos (id, name) VALUES (1, 'Analista')")
         cur.execute("INSERT INTO cargos (id, name) VALUES (2, 'Tecnico')")
