@@ -428,28 +428,133 @@ if USE_PG:
         cur.execute(
             "INSERT INTO modules (id, name, cargo_id) VALUES (4, 'Administracao Geral - Fabio de Assis', 1)"
         )
-        for i in range(1, 11):
+
+        adm_geral_classes = [
+            ("Teorias Burucratica da Administracao", 38),
+            ("Teoria das Relacoes Humanas - Parte I", 30),
+            ("Teoria das Relacoes Humanas - Parte II", 33),
+            ("Teoria Classica - Parte I", 30),
+            ("Teoria Classica - Parte II", 30),
+            ("Teoria Classica - Parte III", 21),
+            ("Teoria Cientifica - Parte I", 30),
+            ("Teoria Cientifica - Parte II", 31),
+            ("Teoria Estruturalista - Parte I", 31),
+            ("Teoria Estruturalista - Parte II", 31),
+            ("Teoria Neoclassica - Parte I", 31),
+            ("Teoria Neoclassica - Parte II", 35),
+            ("Teoria Neoclassica - Parte III", 30),
+            ("Teoria dos Sistemas", 45),
+            ("Teoria Comportamental", 55),
+            ("Teoria Contingencial - Parte I", 30),
+            ("Teoria Contingencial - Parte II", 27),
+            ("Funcoes da Administracao - Parte I", 25),
+            ("Funcoes da Administracao - Parte II", 32),
+            ("Caracteristicas das Organizacoes - Parte I", 31),
+            ("Caracteristicas das Organizacoes - Parte II", 35),
+            ("Caracteristicas das Organizacoes - Parte III", 41),
+            ("Planejamento Estrategico - Parte I", 30),
+            ("Planejamento Estrategico - Parte II", 30),
+            ("Planejamento Estrategico - Parte III", 27),
+            ("Gestao da Qualidade - Parte I", 29),
+            ("Gestao da Qualidade - Parte II", 19),
+            ("Gestao da Qualidade - Parte III", 37),
+            ("Gestao por Projetos - Parte I", 30),
+            ("Gestao por Projetos - Parte II", 30),
+            ("Gestao por Projetos - Parte III", 33),
+            ("Gestao por Projetos - Parte IV", 45),
+            ("Ferramentas Gestao Projetos: PERT/CPM", 21),
+            ("Ferramentas Gestao Projetos: SCRUM", 20),
+            ("Ferramentas Gestao Projetos: Kanban", 18),
+            ("Ferramentas Gestao Projetos: Matriz RACI", 0),
+        ]
+
+        for title, dur in adm_geral_classes:
             cur.execute(
                 "INSERT INTO classes (module_id, title, duration_minutes) VALUES (4, %s, %s)",
-                (f"Adm Geral Aula {i}", 35),
+                (title, dur),
             )
 
         cur.execute(
             "INSERT INTO modules (id, name, cargo_id) VALUES (5, 'Gestao de Pessoas - Fabio de Assis', 1)"
         )
-        for i in range(1, 8):
+
+        gestao_pessoas_classes = [
+            ("Evolucao dos Modelos de Gestao de Pessoas - Parte I", 31),
+            ("Evolucao dos Modelos de Gestao de Pessoas - Parte II", 33),
+            ("Ciclo de Gestao de Pessoas - Parte I", 34),
+            ("Ciclo de Gestao de Pessoas - Parte II", 28),
+            ("Ciclo de Gestao de Pessoas - Parte III", 26),
+            ("Ciclo de Gestao de Pessoas - Parte IV", 31),
+            ("Ciclo de Gestao de Pessoas - Parte V", 31),
+            ("Ciclo de Gestao de Pessoas - Parte VI", 32),
+            ("Lideranca - Parte I", 32),
+            ("Lideranca - Parte II", 32),
+            ("Lideranca - Parte III", 36),
+            ("Motivacao - Parte I", 36),
+            ("Motivacao - Parte II", 25),
+            ("Processo Decisorio - Parte I", 30),
+            ("Processo Decisorio - Parte II", 30),
+            ("Comportamento Organizacional - Parte I", 32),
+            ("Comportamento Organizacional - Parte II", 30),
+            ("Comunicacao - Parte I", 30),
+            ("Comunicacao - Parte II", 38),
+            ("Cultura Organizacional - Parte I", 30),
+            ("Cultura Organizacional - Parte II", 30),
+            ("Cultura Organizacional - Parte III", 31),
+            ("Grupos e Equipes - Parte I", 30),
+            ("Grupos e Equipes - Parte II", 37),
+            ("Desenvolvimento Organizacional - Parte I", 30),
+            ("Desenvolvimento Organizacional - Parte II", 0),
+        ]
+
+        for title, dur in gestao_pessoas_classes:
             cur.execute(
                 "INSERT INTO classes (module_id, title, duration_minutes) VALUES (5, %s, %s)",
-                (f"Gestao Aula {i}", 35),
+                (title, dur),
             )
 
         cur.execute(
             "INSERT INTO modules (id, name, cargo_id) VALUES (6, 'Adm de Materiais - Fabio de Assis', 1)"
         )
-        for i in range(1, 4):
+
+        adm_materiais_classes = [
+            ("Conceitos e Classificacao de Materiais", 41),
+            ("Gestao Patrimonial", 22),
+            ("Recursos Patrimoniais", 13),
+            ("Logistica reversa", 10),
+            ("Logistica e transformacao digital", 21),
+            ("Gerenciamento da Cadeia de Suprimento", 17),
+            ("Armazenamento de Materiais", 24),
+            ("Administracao de Compras", 21),
+            ("Gestao de Estoques", 37),
+        ]
+
+        for title, dur in adm_materiais_classes:
             cur.execute(
                 "INSERT INTO classes (module_id, title, duration_minutes) VALUES (6, %s, %s)",
-                (f"Adm Materiais Aula {i}", 40),
+                (title, dur),
+            )
+
+        cur.execute(
+            "INSERT INTO modules (id, name, cargo_id) VALUES (7, 'Administracao Publica - Fabio de Assis', 1)"
+        )
+
+        adm_publica_classes = [
+            ("Modelos Teoricos da Adm Publica - Burocracia", 50),
+            ("Modelos Teoricos da Adm Publica - Gerencialismo", 31),
+            ("Modelos Teoricos da Adm Publica - Patrimonialismo", 46),
+            ("Historicos e Reformas da Adm Publica no Brasil", 42),
+            ("Governanca e gestao publica - Parte I", 30),
+            ("Governanca e gestao publica - Parte II", 33),
+            ("Governanca Corporativa e Compliance", 35),
+            ("Gestao de resultados - Parte I", 30),
+            ("Gestao de resultados - Parte II", 27),
+        ]
+
+        for title, dur in adm_publica_classes:
+            cur.execute(
+                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (7, %s, %s)",
+                (title, dur),
             )
 
         cur.execute(
@@ -490,12 +595,23 @@ if USE_PG:
             )
 
         cur.execute(
-            "INSERT INTO modules (id, name, cargo_id) VALUES (9, 'Etica - Nathan Pilonetto', NULL)"
+            "INSERT INTO modules (id, name, cargo_id) VALUES (9, 'Etica e Gestao no Servico Publico - Nathan Pilonetto', NULL)"
         )
-        for i in range(1, 8):
+
+        etica_classes = [
+            ("Etica na Administracao Publica", 30),
+            ("Principios Eticos", 30),
+            ("Codigo de Etica", 30),
+            ("Probidade Administrativa", 35),
+            ("Conflitos de Interesse", 25),
+            ("Responsabilidades do Servidor", 30),
+            ("Legislacao Etica - Lei 8.429/1992", 40),
+        ]
+
+        for title, dur in etica_classes:
             cur.execute(
                 "INSERT INTO classes (module_id, title, duration_minutes) VALUES (9, %s, %s)",
-                (f"Etica Aula {i}", 35),
+                (title, dur),
             )
 
         # Tecnico modules
