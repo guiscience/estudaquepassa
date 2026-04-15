@@ -46,6 +46,7 @@
         <section class="agenda-header">
             <div>
                 <h2 style="font-size: 1.5rem;">Cronograma: <span class="primary-text">{{ current_date }}</span></h2>
+                <button onclick="generateSchedule()" style="margin-top: 0.5rem; padding: 0.5rem 1rem; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Gerar Cronograma</button>
             </div>
             <div class="date-badge">
                 {% if day_total > 0 %}
@@ -102,5 +103,28 @@
     </div>
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        async function generateSchedule() {
+            const btn = document.querySelector('button[onclick="generateSchedule()"]');
+            btn.textContent = 'Gerando...';
+            btn.disabled = true;
+            
+            try {
+                const resp = await fetch('/api/generate_schedule', { method: 'POST' });
+                const data = await resp.json();
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Erro: ' + data.message);
+                    btn.textContent = 'Gerar Cronograma';
+                    btn.disabled = false;
+                }
+            } catch(e) {
+                alert('Erro ao gerar cronograma');
+                btn.textContent = 'Gerar Cronograma';
+                btn.disabled = false;
+            }
+        }
+    </script>
 </body>
 </html>
