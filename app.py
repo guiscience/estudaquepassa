@@ -375,14 +375,54 @@ if USE_PG:
                 (title, dur),
             )
 
-        # Shared modules
+        # Shared modules - Informatics (Leo Matos)
         cur.execute(
             "INSERT INTO modules (id, name, cargo_id) VALUES (3, 'Informatica e LGPD - Leo Matos', NULL)"
         )
-        for i in range(1, 11):
+
+        informatica_classes = [
+            ("Hardware - Parte 1", 33),
+            ("Hardware - Parte 2", 34),
+            ("Hardware - Parte 3", 23),
+            ("Hardware - Parte 4", 31),
+            ("Hardware - Parte 5", 32),
+            ("Hardware - Parte 6", 32),
+            ("Software - Parte 1", 22),
+            ("Software - Parte 2", 42),
+            ("Sistema Operacional Windows - Parte 1", 27),
+            ("Sistema Operacional Windows - Parte 2", 36),
+            ("Sistema Operacional Windows - Parte 3", 27),
+            ("Sistema Operacional Windows - Parte 4", 24),
+            ("Redes de Computadores - Parte 1", 23),
+            ("Redes de Computadores - Parte 2", 24),
+            ("Redes de Computadores - Parte 3", 29),
+            ("Redes de Computadores - Parte 4", 52),
+            ("Conceitos de Internet e Intranet", 18),
+            ("Seguranca da Informacao - Parte 1", 20),
+            ("Seguranca da Informacao - Parte 2", 21),
+            ("Seguranca da Informacao - Parte 3", 26),
+            ("Seguranca da Informacao - Parte 4", 21),
+            ("Seguranca da Informacao - Parte 5", 24),
+            ("Seguranca da Informacao - Parte 6", 19),
+            ("Seguranca da Informacao - Parte 7", 23),
+            ("Seguranca da Informacao - Parte 8", 22),
+            ("Seguranca da Informacao - Parte 9", 27),
+            ("Seguranca da Informacao - Parte 10", 31),
+            ("Lei 13.709/2018 - Introducao e Fundamentos", 61),
+            ("Lei 13.709/2018 - Requisitos Tratamento Dados", 49),
+            ("Lei 13.709/2018 - Direitos do Titular", 41),
+            ("Lei 13.709/2018 - Tratamento pelo Poder Publico", 32),
+            ("Lei 13.709/2018 - Transferencia Internacional de Dados", 28),
+            ("Lei 13.709/2018 - Controlador e Operador", 45),
+            ("Resumo - Mapeando a Lei 13.709/2018", 36),
+            ("Questoes da Lei 13.709/2018 (LGPD)", 32),
+            ("Resolucao TJ 3/2021 do TJSC", 0),
+        ]
+
+        for title, dur in informatica_classes:
             cur.execute(
                 "INSERT INTO classes (module_id, title, duration_minutes) VALUES (3, %s, %s)",
-                (f"Informatica Aula {i}", 35),
+                (title, dur),
             )
 
         cur.execute(
