@@ -1578,52 +1578,75 @@ def toggle_class():
 
     now = int(datetime.now().timestamp())
 
-    # Certifica-se de que a coluna last_updated existe
-    conn.execute(
-        "ALTER TABLE user_progress ADD COLUMN IF NOT EXISTS last_updated INTEGER DEFAULT 0"
-    )
+    if USE_PG:
+        cur = conn.cursor()
+        try:
+            cur.execute(
+                "ALTER TABLE user_progress ADD COLUMN IF NOT EXISTS last_updated INTEGER DEFAULT 0"
+            )
+        except:
+            pass
 
-    conn.execute(
-        """
-        INSERT INTO user_progress (user_id, class_id, is_completed, last_updated)
-        VALUES (?, ?, ?, ?)
-        ON CONFLICT(user_id, class_id) DO UPDATE SET is_completed = ?, last_updated = ?
-    """,
-        (current_user.id, class_id, status_int, now, status_int, now),
-    )
-    conn.commit()
+        cur.execute(
+            """
+            INSERT INTO user_progress (user_id, class_id, is_completed, last_updated)
+            VALUES (%s, %s, %s, %s)
+            ON CONFLICT(user_id, class_id) DO UPDATE SET is_completed = %s, last_updated = %s
+        """,
+            (current_user.id, class_id, status_int, now, status_int, now),
+        )
+        conn.commit()
 
-    # Totais específicos do cargo do usuário
-    cargo_id = current_user.effective_cargo_id
-    total_minutes = (
+        # Get totals
+        cur.execute(
+            "SELECT SUM(c.duration_minutes) FROM classes c JOIN modules m ON c.module_id = m.id WHERE m.cargo_id = %s OR m.cargo_id IS NULL",
+            (current_user.effective_cargo_id,),
+        )
+        total_minutes = cur.fetchone()[0] or 0
+
+        cur.execute(
+            "SELECT SUM(c.duration_minutes) FROM classes c JOIN modules m ON c.module_id = m.id JOIN user_progress up ON c.id = up.class_id WHERE up.user_id = %s AND up.is_completed = 1 AND (m.cargo_id = %s OR m.cargo_id IS NULL)",
+            (current_user.id, current_user.effective_cargo_id),
+        )
+        completed_minutes = cur.fetchone()[0] or 0
+
+        conn.close()
+    else:
+        try:
+            conn.execute(
+                "ALTER TABLE user_progress ADD COLUMN IF NOT EXISTS last_updated INTEGER DEFAULT 0"
+            )
+        except:
+            pass
+
         conn.execute(
             """
-        SELECT SUM(c.duration_minutes)
-        FROM classes c
-        JOIN modules m ON c.module_id = m.id
-        WHERE m.cargo_id = ? OR m.cargo_id IS NULL
-    """,
-            (cargo_id,),
-        ).fetchone()[0]
-        or 0
-    )
+            INSERT INTO user_progress (user_id, class_id, is_completed, last_updated)
+            VALUES (?, ?, ?, ?)
+            ON CONFLICT(user_id, class_id) DO UPDATE SET is_completed = ?, last_updated = ?
+        """,
+            (current_user.id, class_id, status_int, now, status_int, now),
+        )
+        conn.commit()
 
-    completed_minutes = (
-        conn.execute(
-            """
-        SELECT SUM(c.duration_minutes)
-        FROM classes c
-        JOIN modules m        ON c.module_id = m.id
-        JOIN user_progress up ON c.id = up.class_id
-        WHERE up.user_id = ? AND up.is_completed = 1
-          AND (m.cargo_id = ? OR m.cargo_id IS NULL)
-    """,
-            (current_user.id, cargo_id),
-        ).fetchone()[0]
-        or 0
-    )
+        cargo_id = current_user.effective_cargo_id
+        total_minutes = (
+            conn.execute(
+                "SELECT SUM(c.duration_minutes) FROM classes c JOIN modules m ON c.module_id = m.id WHERE m.cargo_id = ? OR m.cargo_id IS NULL",
+                (cargo_id,),
+            ).fetchone()[0]
+            or 0
+        )
 
-    conn.close()
+        completed_minutes = (
+            conn.execute(
+                "SELECT SUM(c.duration_minutes) FROM classes c JOIN modules m ON c.module_id = m.id JOIN user_progress up ON c.id = up.class_id WHERE up.user_id = ? AND up.is_completed = 1 AND (m.cargo_id = ? OR m.cargo_id IS NULL)",
+                (current_user.id, cargo_id),
+            ).fetchone()[0]
+            or 0
+        )
+
+        conn.close()
 
     return jsonify(
         {
