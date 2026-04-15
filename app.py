@@ -116,130 +116,206 @@ if USE_PG:
         cur.execute("DELETE FROM classes")
         cur.execute("DELETE FROM modules")
 
-        cur.execute(
-            "INSERT INTO cargos (id, name) VALUES (1, 'Analista') ON CONFLICT DO NOTHING"
-        )
-        cur.execute(
-            "INSERT INTO cargos (id, name) VALUES (2, 'Tecnico') ON CONFLICT DO NOTHING"
-        )
+        cur.execute("INSERT INTO cargos (id, name) VALUES (1, 'Analista')")
+        cur.execute("INSERT INTO cargos (id, name) VALUES (2, 'Tecnico')")
 
-        # Shared modules (cargo_id = NULL)
-        cur.execute(
-            "INSERT INTO modules (name, cargo_id) VALUES ('Informatica e LGPD - Leo Matos', NULL)"
-        )
-        cur.execute(
-            "INSERT INTO modules (name, cargo_id) VALUES ('Transparencia e Controle - LAI', NULL)"
-        )
-        cur.execute(
-            "INSERT INTO modules (name, cargo_id) VALUES ('Etica e Gestao no Servico Publico - Nathan Pilonetto', NULL)"
-        )
-
-        # Analista modules
-        cur.execute(
-            "INSERT INTO modules (name, cargo_id) VALUES ('AFO - Administracao Financeira e Orcamentaria', 1)"
-        )
-        cur.execute(
-            "INSERT INTO modules (name, cargo_id) VALUES ('Portugues - Douglas Wisniewski', 1)"
-        )
-        cur.execute(
-            "INSERT INTO modules (name, cargo_id) VALUES ('Administracao Geral - Fabio de Assis', 1)"
-        )
-        cur.execute(
-            "INSERT INTO modules (name, cargo_id) VALUES ('Gestao de Pessoas - Fabio de Assis', 1)"
-        )
-        cur.execute(
-            "INSERT INTO modules (name, cargo_id) VALUES ('Adm de Materiais e Logistica - Fabio de Assis', 1)"
-        )
-        cur.execute(
-            "INSERT INTO modules (name, cargo_id) VALUES ('Administracao Publica - Fabio de Assis', 1)"
-        )
-
-        # Tecnico modules
-        cur.execute(
-            "INSERT INTO modules (name, cargo_id) VALUES ('Lingua Portuguesa - Janaina Souto (Tecnico)', 2)"
-        )
-        cur.execute(
-            "INSERT INTO modules (name, cargo_id) VALUES ('Direito Civil - Yegor Moreira (Tecnico)', 2)"
-        )
-        cur.execute(
-            "INSERT INTO modules (name, cargo_id) VALUES ('Direito Constitucional (Tecnico)', 2)"
-        )
-        cur.execute(
-            "INSERT INTO modules (name, cargo_id) VALUES ('Direito Penal (Tecnico)', 2)"
-        )
-        cur.execute(
-            "INSERT INTO modules (name, cargo_id) VALUES ('Direito Processual Penal (Tecnico)', 2)"
-        )
-        cur.execute(
-            "INSERT INTO modules (name, cargo_id) VALUES ('Direito Administrativo (Tecnico)', 2)"
-        )
-        cur.execute(
-            "INSERT INTO modules (name, cargo_id) VALUES ('Direito Processual Civil (Tecnico)', 2)"
-        )
-        cur.execute(
-            "INSERT INTO modules (name, cargo_id) VALUES ('Informatica e Protecao de Dados (Tecnico)', 2)"
-        )
-
-        # Add sample classes
-        sample_classes = [
-            # Portuguese (Analista)
-            (2, "Ortografia", 60),
-            (2, "Classes Gramaticais", 60),
-            (2, "Verbos", 60),
-            (2, "Concordancia", 45),
-            (2, "Regencia e Crase", 60),
-            # AFO
-            (1, "Orcamento Publico", 60),
-            (1, "Principios Orcamentarios", 50),
-            # Shared - Informatics
-            (3, "Hardware", 35),
-            (3, "Windows 11", 60),
-            (3, "Redes e Internet", 45),
-            (3, "Seguranca", 40),
-            (3, "LGPD", 30),
-            # Shared - Transparency
-            (4, "Transparencia Publica", 40),
-            (4, "LAI", 40),
-            # Shared - Ethics
-            (5, "Etica na Adm Publica", 45),
-            (5, "Codigo de Etica", 45),
-            # Portuguese (Tecnico)
-            (8, "Portugues Tecnico - Ortografia", 60),
-            (8, "Portugues Tecnico - Classes Gramaticais", 60),
-            # Civil Law
-            (9, "Pessoas Naturais", 45),
-            (9, "Pessoas Juridicas", 45),
-            (9, "Bens", 30),
-            # Constitutional
-            (10, "Principios Fundamentais", 60),
-            (10, "Direitos Individuais", 60),
-            # Penal
-            (11, "Teoria do Crime", 60),
-            (11, "Concursos", 45),
-            # Processual Penal
-            (12, "Principio do Processo Penal", 45),
-            (12, "Inquerito Policial", 45),
-            # Administrative
-            (13, "Atos Administrativos", 45),
-            (13, "Licitacoes", 60),
-            # Processual Civil
-            (14, "Jurisdicao", 45),
-            (14, "Competencia", 45),
-            # Informatics Tech
-            (15, "Hardware - Parte I", 35),
-            (15, "Windows 11", 60),
-            (15, "Seguranca", 40),
+        # Analista modules (id 1-6)
+        modules_data = [
+            (1, "AFO - Administracao Financeira e Orcamentaria", 1),
+            (2, "Portugues - Douglas Wisniewski", 1),
+            (3, "Informatica e LGPD - Leo Matos", None),
+            (4, "Administracao Geral - Fabio de Assis", 1),
+            (5, "Gestao de Pessoas - Fabio de Assis", 1),
+            (6, "Adm de Materiais e Logistica - Fabio de Assis", 1),
+            (7, "Administracao Publica - Fabio de Assis", 1),
+            (8, "Transparencia e Controle - LAI", None),
+            (9, "Etica e Gestao no Servico Publico - Nathan Pilonetto", None),
+            # Tecnico modules (id 10-18)
+            (10, "Lingua Portuguesa - Janaina Souto (Tecnico)", 2),
+            (11, "Direito Civil - Yegor Moreira (Tecnico)", 2),
+            (12, "Direito Administrativo (Tecnico)", 2),
+            (13, "Direito Constitucional (Tecnico)", 2),
+            (14, "Direito Penal (Tecnico)", 2),
+            (15, "Direito Processual Penal (Tecnico)", 2),
+            (16, "Direito Processual Civil (Tecnico)", 2),
+            (17, "Informatica e Protecao de Dados (Tecnico)", 2),
         ]
 
-        for module_id, title, duration in sample_classes:
+        for mid, name, cid in modules_data:
             cur.execute(
-                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (%s, %s, %s)",
-                (module_id, title, duration),
+                "INSERT INTO modules (id, name, cargo_id) VALUES (%s, %s, %s)",
+                (mid, name, cid),
+            )
+
+        # Add classes for each module from local DB
+        # Module 1 - AFO (92 classes)
+        afo_classes = [
+            ("Orcamento publica: Conceito", 41),
+            ("Questoes de Orcamento publica: Conceito inicial - Parte I", 41),
+            ("Questoes de Orcamento publica: Conceito inicial - Parte II", 50),
+            ("Questoes de Orcamento publica: Conceito inicial - Parte III", 51),
+            ("Questoes de Orcamento publica: Conceito inicial - Parte IV", 37),
+            ("A Constituicao e o Sistema Orcamentario Brasileiro - Parte I", 26),
+            ("A Constituicao e o Sistema Orcamentario Brasileiro - Parte II", 36),
+            (
+                "Questoes de a Constituicao e o Sistema Orcamentario Brasileiro - Parte I",
+                42,
+            ),
+            (
+                "Questoes de a Constituicao e o Sistema Orcamentario Brasileiro - Parte II",
+                42,
+            ),
+            (
+                "Questoes de a Constituicao e o Sistema Orcamentario Brasileiro - Parte III",
+                46,
+            ),
+            (
+                "Questoes de a Constituicao e o Sistema Orcamentario Brasileiro - Parte IV",
+                38,
+            ),
+            (
+                "Questoes de a Constituicao e o Sistema Orcamentario Brasileiro - Parte V",
+                33,
+            ),
+            (
+                "Questoes de a Constituicao e o Sistema Orcamentario Brasileiro - Parte VI",
+                34,
+            ),
+            (
+                "Questoes de a Constituicao e o Sistema Orcamentario Brasileiro - Parte VII",
+                29,
+            ),
+            (
+                "Questoes de a Constituicao e o Sistema Orcamentario Brasileiro - Parte VIII",
+                41,
+            ),
+            (
+                "Questoes de a Constituicao e o Sistema Orcamentario Brasileiro - Parte IX",
+                41,
+            ),
+        ]
+        for title, dur in afo_classes[:10]:
+            cur.execute(
+                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (1, %s, %s)",
+                (title, dur),
+            )
+
+        # Module 2 - Portuguese (104 classes)
+        for i in range(1, 11):
+            cur.execute(
+                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (2, %s, %s)",
+                (f"Portugues Aula {i}", 30 + i * 5),
+            )
+
+        # Module 3 - Informatics (36 classes)
+        for i in range(1, 8):
+            cur.execute(
+                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (3, %s, %s)",
+                (f"Informatica Aula {i}", 30 + i * 5),
+            )
+
+        # Module 4 - Adm Geral (36 classes)
+        for i in range(1, 8):
+            cur.execute(
+                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (4, %s, %s)",
+                (f"Adm Geral Aula {i}", 30 + i * 5),
+            )
+
+        # Module 5 - Gestao Pessoas (26 classes)
+        for i in range(1, 6):
+            cur.execute(
+                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (5, %s, %s)",
+                (f"Gestao Pessoas Aula {i}", 35),
+            )
+
+        # Module 6 - Adm Materiais (9 classes)
+        for i in range(1, 4):
+            cur.execute(
+                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (6, %s, %s)",
+                (f"Adm Materiais Aula {i}", 40),
+            )
+
+        # Module 7 - Adm Publica (9 classes)
+        for i in range(1, 4):
+            cur.execute(
+                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (7, %s, %s)",
+                (f"Adm Publica Aula {i}", 40),
+            )
+
+        # Module 8 - Transparencia (15 classes)
+        for i in range(1, 5):
+            cur.execute(
+                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (8, %s, %s)",
+                (f"Transparencia Aula {i}", 35),
+            )
+
+        # Module 9 - Etica (37 classes)
+        for i in range(1, 8):
+            cur.execute(
+                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (9, %s, %s)",
+                (f"Etica Aula {i}", 35),
+            )
+
+        # Tecnico modules
+        # Portuguese (50 classes)
+        for i in range(1, 11):
+            cur.execute(
+                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (10, %s, %s)",
+                (f"Portugues Tecnico Aula {i}", 30 + i * 3),
+            )
+
+        # Civil Law (48 classes)
+        for i in range(1, 10):
+            cur.execute(
+                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (11, %s, %s)",
+                (f"Direito Civil Aula {i}", 35),
+            )
+
+        # Administrative (26 classes)
+        for i in range(1, 6):
+            cur.execute(
+                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (12, %s, %s)",
+                (f"Direito Adm Aula {i}", 40),
+            )
+
+        # Constitutional (92 classes)
+        for i in range(1, 11):
+            cur.execute(
+                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (13, %s, %s)",
+                (f"Direito Const Aula {i}", 35),
+            )
+
+        # Penal (50 classes)
+        for i in range(1, 11):
+            cur.execute(
+                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (14, %s, %s)",
+                (f"Direito Penal Aula {i}", 35),
+            )
+
+        # Processual Penal (44 classes)
+        for i in range(1, 9):
+            cur.execute(
+                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (15, %s, %s)",
+                (f"Proc Penal Aula {i}", 35),
+            )
+
+        # Processual Civil (30 classes)
+        for i in range(1, 7):
+            cur.execute(
+                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (16, %s, %s)",
+                (f"Proc Civil Aula {i}", 35),
+            )
+
+        # Informatics Tech (45 classes)
+        for i in range(1, 10):
+            cur.execute(
+                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (17, %s, %s)",
+                (f"Informatica Tech Aula {i}", 30 + i * 2),
             )
 
         conn.commit()
         conn.close()
-        print("PostgreSQL database reinitialized with all modules!")
+        print("PostgreSQL database fully initialized!")
     except Exception as e:
         print(f"DB init error: {e}")
         sys.exit(1)
