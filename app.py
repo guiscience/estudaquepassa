@@ -1700,8 +1700,9 @@ def generate_schedule_route():
     from generate_schedule import generate_schedule_for_user
 
     start_date = datetime.now().strftime("%Y-%m-%d")
-    generate_schedule_for_user(current_user.id, start_date)
-    return jsonify({"success": True, "message": "Cronograma gerado com sucesso!"})
+    cargo_id = current_user.effective_cargo_id
+    days = generate_schedule_for_user(current_user.id, start_date, cargo_id)
+    return jsonify({"success": True, "message": f"Cronograma gerado ({days} dias)!"})
 
 
 if __name__ == "__main__":
