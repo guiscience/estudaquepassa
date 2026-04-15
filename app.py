@@ -316,10 +316,29 @@ if USE_PG:
         cur.execute(
             "INSERT INTO modules (id, name, cargo_id) VALUES (8, 'Transparencia e Controle - LAI', NULL)"
         )
-        for i in range(1, 5):
+
+        transparencia_classes = [
+            ("Lei de Acesso a Informacao (Lei 12.527/2011) - Parte I", 13),
+            ("Lei de Acesso a Informacao (Lei 12.527/2011) - Parte II", 30),
+            ("Lei de Acesso a Informacao (Lei 12.527/2011) - Parte III", 21),
+            ("Lei de Acesso a Informacao (Lei 12.527/2011) - Parte IV", 26),
+            ("Lei de Acesso a Informacao (Lei 12.527/2011) - Parte V", 24),
+            ("Lei de Acesso a Informacao (Lei 12.527/2011) - Parte VI", 30),
+            ("Lei de Acesso a Informacao (Lei 12.527/2011) - Parte VII", 31),
+            ("Lei de Acesso a Informacao (Lei 12.527/2011) - Parte VIII", 10),
+            ("Lei de Acesso a Informacao (Lei 12.527/2011) - Parte IX", 26),
+            ("Lei de Acesso a Informacao (Lei 12.527/2011) - Parte X", 20),
+            ("Lei de Acesso a Informacao (Lei 12.527/2011) - Parte XI", 25),
+            ("Lei de Acesso a Informacao (Lei 12.527/2011) - Parte XII", 27),
+            ("Questoes da Lei de Acesso a Informacao - Parte I", 31),
+            ("Questoes da Lei de Acesso a Informacao - Parte II", 35),
+            ("Lei complementar 131/2009", 17),
+        ]
+
+        for title, dur in transparencia_classes:
             cur.execute(
                 "INSERT INTO classes (module_id, title, duration_minutes) VALUES (8, %s, %s)",
-                (f"Transparencia Aula {i}", 35),
+                (title, dur),
             )
 
         cur.execute(
