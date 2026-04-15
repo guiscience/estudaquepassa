@@ -56,37 +56,45 @@ def get_module_priority(module_name, cargo_id):
 
 def generate_schedule_for_user(user_id, start_date_str="2026-04-14", cargo_id=1):
     """
-    Gera o cronograma de estudo para um usuário.
-    Prioritiza módulos baseado no número de questões da prova.
+    Gera o cronograma de estudio para um usuário.
+    Prioritiza módulos basado no número de questões da prova.
+    Suporta SQLite e PostgreSQL.
     """
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
+    if USE_PG:
+        import psycopg
+
+        conn = psycopg.connect(DB_PATH)
+    else:
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row
+
     cursor = conn.cursor()
+    sql_placeholder = "%s" if USE_PG else "?"
 
     # Get effective cargo_id for user
     if cargo_id is None:
-        user_row = cursor.execute(
-            "SELECT cargo_id FROM users WHERE id = ?", (user_id,)
-        ).fetchone()
-        cargo_id = user_row["cargo_id"] if user_row else 1
+        cursor.execute(
+            f"SELECT cargo_id FROM users WHERE id = {sql_placeholder}", (user_id,)
+        )
+        user_row = cursor.fetchone()
+        cargo_id = user_row[0] if user_row else 1
 
     # Get modules for this cargo (or shared modules)
-    modules = cursor.execute(
-        """
-        SELECT id, name FROM modules 
-        WHERE cargo_id = ? OR cargo_id IS NULL
-        ORDER BY id
-    """,
+    cursor.execute(
+        f"SELECT id, name FROM modules WHERE cargo_id = {sql_placeholder} OR cargo_id IS NULL ORDER BY id",
         (cargo_id,),
-    ).fetchall()
+    )
+    modules = cursor.fetchall()
+    module_list = [(m[0], m[1]) for m in modules]
 
     # Calculate priority for each module
     module_priority = {}
     module_ids = []
-    for m in modules:
-        priority = get_module_priority(m["name"], cargo_id)
-        module_priority[m["id"]] = priority
-        module_ids.append(m["id"])
+    for m in module_list:
+        mid, mname = m
+        priority = get_module_priority(mname, cargo_id)
+        module_priority[mid] = priority
+        module_ids.append(mid)
 
     # Sort by priority (highest first)
     module_ids_sorted = sorted(
@@ -95,25 +103,26 @@ def generate_schedule_for_user(user_id, start_date_str="2026-04-14", cargo_id=1)
 
     print(f"Prioridades para cargo {cargo_id}:")
     for mid in module_ids_sorted:
-        m_name = next(m["name"] for m in modules if m["id"] == mid)
+        m_name = next(m[1] for m in module_list if m[0] == mid)
         print(f"  {m_name}: {module_priority[mid]} questões")
 
     # Get remaining classes for each module
     module_queues = {}
     for mid in module_ids:
-        rows = cursor.execute(
-            """
+        cursor.execute(
+            f"""
             SELECT c.id, c.duration_minutes
             FROM classes c
             LEFT JOIN user_progress up
-                ON c.id = up.class_id AND up.user_id = ?
-            WHERE c.module_id = ?
+                ON c.id = up.class_id AND up.user_id = {sql_placeholder}
+            WHERE c.module_id = {sql_placeholder}
               AND (up.scheduled_date IS NULL OR up.is_completed = 0)
             ORDER BY c.id
         """,
             (user_id, mid),
-        ).fetchall()
-        module_queues[mid] = [dict(r) for r in rows]
+        )
+        rows = cursor.fetchall()
+        module_queues[mid] = [{"id": r[0], "duration_minutes": r[1]} for r in rows]
 
     current_date = datetime.strptime(start_date_str, "%Y-%m-%d")
     active_module_idx = 0
@@ -137,20 +146,25 @@ def generate_schedule_for_user(user_id, start_date_str="2026-04-14", cargo_id=1)
                 mid = module_ids_sorted[active_module_idx]
                 if module_queues[mid]:
                     cls = module_queues[mid].pop(0)
-                    cursor.execute(
-                        """
-                        INSERT INTO user_progress (user_id, class_id, scheduled_date, is_completed)
-                        VALUES (?, ?, ?, 0)
-                        ON CONFLICT(user_id, class_id)
-                        DO UPDATE SET scheduled_date = ?, is_completed = 0
-                    """,
-                        (
-                            user_id,
-                            cls["id"],
-                            current_date.strftime("%Y-%m-%d"),
-                            current_date.strftime("%Y-%m-%d"),
-                        ),
-                    )
+                    date_str = current_date.strftime("%Y-%m-%d")
+                    if USE_PG:
+                        cursor.execute(
+                            f"""
+                            INSERT INTO user_progress (user_id, class_id, scheduled_date, is_completed)
+                            VALUES ({sql_placeholder}, {sql_placeholder}, {sql_placeholder}, 0)
+                            ON CONFLICT(user_id, class_id) DO UPDATE SET scheduled_date = {sql_placeholder}, is_completed = 0
+                        """,
+                            (user_id, cls["id"], date_str, date_str),
+                        )
+                    else:
+                        cursor.execute(
+                            f"""
+                            INSERT INTO user_progress (user_id, class_id, scheduled_date, is_completed)
+                            VALUES (?, ?, ?, 0)
+                            ON CONFLICT(user_id, class_id) DO UPDATE SET scheduled_date = ?, is_completed = 0
+                        """,
+                            (user_id, cls["id"], date_str, date_str),
+                        )
                     used_minutes += cls["duration_minutes"]
                     active_module_idx = (active_module_idx + 1) % len(module_ids_sorted)
                     break
