@@ -94,24 +94,17 @@ import sys
 if USE_PG:
     import psycopg
 
-try:
+    try:
         conn = psycopg.connect(DB_PATH)
         cur = conn.cursor()
-        
-        # Drop and recreate tables with CASCADE
+
+        # Drop and recreate tables
         cur.execute("DROP TABLE IF EXISTS user_progress CASCADE")
         cur.execute("DROP TABLE IF EXISTS classes CASCADE")
         cur.execute("DROP TABLE IF EXISTS modules CASCADE")
         cur.execute("DROP TABLE IF EXISTS users CASCADE")
         cur.execute("DROP TABLE IF EXISTS cargos CASCADE")
-        conn.commit()
-        
-        # Reset sequences
-        cur.execute("DROP SEQUENCE IF EXISTS modules_id_seq")
-        cur.execute("DROP SEQUENCE IF EXISTS classes_id_seq")
-        cur.execute("DROP SEQUENCE IF EXISTS users_id_seq")
-        cur.execute("DROP SEQUENCE IF EXISTS cargos_id_seq")
-        
+
         cur.execute(
             """CREATE TABLE IF NOT EXISTS modules (id SERIAL PRIMARY KEY, name TEXT, cargo_id INTEGER)"""
         )
