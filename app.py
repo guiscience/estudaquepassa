@@ -113,6 +113,9 @@ if USE_PG:
             """CREATE TABLE IF NOT EXISTS cargos (id SERIAL PRIMARY KEY, name TEXT)"""
         )
 
+        cur.execute("DELETE FROM classes")
+        cur.execute("DELETE FROM modules")
+
         cur.execute(
             "INSERT INTO cargos (id, name) VALUES (1, 'Analista') ON CONFLICT DO NOTHING"
         )
@@ -122,83 +125,110 @@ if USE_PG:
 
         # Shared modules (cargo_id = NULL)
         cur.execute(
-            "INSERT INTO modules (name, cargo_id) VALUES ('Informatica e LGPD - Leo Matos', NULL) ON CONFLICT DO NOTHING"
+            "INSERT INTO modules (name, cargo_id) VALUES ('Informatica e LGPD - Leo Matos', NULL)"
         )
         cur.execute(
-            "INSERT INTO modules (name, cargo_id) VALUES ('Transparencia e Controle - LAI', NULL) ON CONFLICT DO NOTHING"
+            "INSERT INTO modules (name, cargo_id) VALUES ('Transparencia e Controle - LAI', NULL)"
         )
         cur.execute(
-            "INSERT INTO modules (name, cargo_id) VALUES ('Etica e Gestao no Servico Publico - Nathan Pilonetto', NULL) ON CONFLICT DO NOTHING"
+            "INSERT INTO modules (name, cargo_id) VALUES ('Etica e Gestao no Servico Publico - Nathan Pilonetto', NULL)"
         )
 
         # Analista modules
         cur.execute(
-            "INSERT INTO modules (name, cargo_id) VALUES ('AFO - Administracao Financeira e Orcamentaria', 1) ON CONFLICT DO NOTHING"
+            "INSERT INTO modules (name, cargo_id) VALUES ('AFO - Administracao Financeira e Orcamentaria', 1)"
         )
         cur.execute(
-            "INSERT INTO modules (name, cargo_id) VALUES ('Portugues - Douglas Wisniewski', 1) ON CONFLICT DO NOTHING"
+            "INSERT INTO modules (name, cargo_id) VALUES ('Portugues - Douglas Wisniewski', 1)"
         )
         cur.execute(
-            "INSERT INTO modules (name, cargo_id) VALUES ('Administracao Geral - Fabio de Assis', 1) ON CONFLICT DO NOTHING"
+            "INSERT INTO modules (name, cargo_id) VALUES ('Administracao Geral - Fabio de Assis', 1)"
         )
         cur.execute(
-            "INSERT INTO modules (name, cargo_id) VALUES ('Gestao de Pessoas - Fabio de Assis', 1) ON CONFLICT DO NOTHING"
+            "INSERT INTO modules (name, cargo_id) VALUES ('Gestao de Pessoas - Fabio de Assis', 1)"
         )
         cur.execute(
-            "INSERT INTO modules (name, cargo_id) VALUES ('Adm de Materiais e Logistica - Fabio de Assis', 1) ON CONFLICT DO NOTHING"
+            "INSERT INTO modules (name, cargo_id) VALUES ('Adm de Materiais e Logistica - Fabio de Assis', 1)"
         )
         cur.execute(
-            "INSERT INTO modules (name, cargo_id) VALUES ('Administracao Publica - Fabio de Assis', 1) ON CONFLICT DO NOTHING"
+            "INSERT INTO modules (name, cargo_id) VALUES ('Administracao Publica - Fabio de Assis', 1)"
         )
 
         # Tecnico modules
         cur.execute(
-            "INSERT INTO modules (name, cargo_id) VALUES ('Lingua Portuguesa - Janaina Souto (Tecnico)', 2) ON CONFLICT DO NOTHING"
+            "INSERT INTO modules (name, cargo_id) VALUES ('Lingua Portuguesa - Janaina Souto (Tecnico)', 2)"
         )
         cur.execute(
-            "INSERT INTO modules (name, cargo_id) VALUES ('Direito Civil - Yegor Moreira (Tecnico)', 2) ON CONFLICT DO NOTHING"
+            "INSERT INTO modules (name, cargo_id) VALUES ('Direito Civil - Yegor Moreira (Tecnico)', 2)"
         )
         cur.execute(
-            "INSERT INTO modules (name, cargo_id) VALUES ('Direito Constitucional (Tecnico)', 2) ON CONFLICT DO NOTHING"
+            "INSERT INTO modules (name, cargo_id) VALUES ('Direito Constitucional (Tecnico)', 2)"
         )
         cur.execute(
-            "INSERT INTO modules (name, cargo_id) VALUES ('Direito Penal (Tecnico)', 2) ON CONFLICT DO NOTHING"
+            "INSERT INTO modules (name, cargo_id) VALUES ('Direito Penal (Tecnico)', 2)"
         )
         cur.execute(
-            "INSERT INTO modules (name, cargo_id) VALUES ('Direito Processual Penal (Tecnico)', 2) ON CONFLICT DO NOTHING"
+            "INSERT INTO modules (name, cargo_id) VALUES ('Direito Processual Penal (Tecnico)', 2)"
         )
         cur.execute(
-            "INSERT INTO modules (name, cargo_id) VALUES ('Direito Administrativo (Tecnico)', 2) ON CONFLICT DO NOTHING"
+            "INSERT INTO modules (name, cargo_id) VALUES ('Direito Administrativo (Tecnico)', 2)"
         )
         cur.execute(
-            "INSERT INTO modules (name, cargo_id) VALUES ('Direito Processual Civil (Tecnico)', 2) ON CONFLICT DO NOTHING"
+            "INSERT INTO modules (name, cargo_id) VALUES ('Direito Processual Civil (Tecnico)', 2)"
         )
         cur.execute(
-            "INSERT INTO modules (name, cargo_id) VALUES ('Informatica e Protecao de Dados (Tecnico)', 2) ON CONFLICT DO NOTHING"
+            "INSERT INTO modules (name, cargo_id) VALUES ('Informatica e Protecao de Dados (Tecnico)', 2)"
         )
 
-        # Add sample classes (Português Analista - module 7)
+        # Add sample classes
         sample_classes = [
-            (7, "Ortografia", 60),
-            (7, "Classes Gramaticais", 60),
-            (7, "Verbos", 60),
-            (7, "Concordancia Nominal", 45),
-            (7, "Concordancia Verbal", 45),
-            (7, "Regencia e Crase", 60),
-            (7, "Pontuacao", 60),
-            (7, "Interpretacao de Texto", 60),
-            # Shared modules
-            (8, "Hardware - Parte I", 35),
-            (8, "Hardware - Parte II", 30),
-            (8, "Windows 11", 60),
-            (8, "Internet e Redes", 45),
-            (8, "Seguranca da Informacao", 40),
-            (8, "LGPD", 30),
-            (13, "Transparencia Publica", 40),
-            (13, "LAI - Lei de Acesso a Informacao", 40),
-            (14, "Etica na Administracao Publica", 45),
-            (14, "Codigo de Etica", 45),
-            (14, "Probidade Administrativa", 40),
+            # Portuguese (Analista)
+            (2, "Ortografia", 60),
+            (2, "Classes Gramaticais", 60),
+            (2, "Verbos", 60),
+            (2, "Concordancia", 45),
+            (2, "Regencia e Crase", 60),
+            # AFO
+            (1, "Orcamento Publico", 60),
+            (1, "Principios Orcamentarios", 50),
+            # Shared - Informatics
+            (3, "Hardware", 35),
+            (3, "Windows 11", 60),
+            (3, "Redes e Internet", 45),
+            (3, "Seguranca", 40),
+            (3, "LGPD", 30),
+            # Shared - Transparency
+            (4, "Transparencia Publica", 40),
+            (4, "LAI", 40),
+            # Shared - Ethics
+            (5, "Etica na Adm Publica", 45),
+            (5, "Codigo de Etica", 45),
+            # Portuguese (Tecnico)
+            (8, "Portugues Tecnico - Ortografia", 60),
+            (8, "Portugues Tecnico - Classes Gramaticais", 60),
+            # Civil Law
+            (9, "Pessoas Naturais", 45),
+            (9, "Pessoas Juridicas", 45),
+            (9, "Bens", 30),
+            # Constitutional
+            (10, "Principios Fundamentais", 60),
+            (10, "Direitos Individuais", 60),
+            # Penal
+            (11, "Teoria do Crime", 60),
+            (11, "Concursos", 45),
+            # Processual Penal
+            (12, "Principio do Processo Penal", 45),
+            (12, "Inquerito Policial", 45),
+            # Administrative
+            (13, "Atos Administrativos", 45),
+            (13, "Licitacoes", 60),
+            # Processual Civil
+            (14, "Jurisdicao", 45),
+            (14, "Competencia", 45),
+            # Informatics Tech
+            (15, "Hardware - Parte I", 35),
+            (15, "Windows 11", 60),
+            (15, "Seguranca", 40),
         ]
 
         for module_id, title, duration in sample_classes:
@@ -209,7 +239,7 @@ if USE_PG:
 
         conn.commit()
         conn.close()
-        print("PostgreSQL database initialized with sample classes!")
+        print("PostgreSQL database reinitialized with all modules!")
     except Exception as e:
         print(f"DB init error: {e}")
         sys.exit(1)
