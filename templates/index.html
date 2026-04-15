@@ -18,6 +18,23 @@
         {% set active_page = 'index' %}
         {% include 'partials/header.html' %}
 
+        <section class="filter-bar" style="margin: 1rem 0; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 12px; display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+            <span style="color: var(--text-muted); font-weight: 600;">Filtrar por:</span>
+            <select id="filter-banca" class="form-control" style="padding: 0.5rem; border-radius: 8px; background: var(--bg); color: var(--text); border: 1px solid var(--border);">
+                <option value="">Todas as Bancas</option>
+                <option value="1">FGV</option>
+                <option value="2">CESPE</option>
+                <option value="3">FCC</option>
+            </select>
+            <select id="filter-disciplina" class="form-control" style="padding: 0.5rem; border-radius: 8px; background: var(--bg); color: var(--text); border: 1px solid var(--border);">
+                <option value="">Todas as Disciplinas</option>
+                {% for mod in study_data %}
+                <option value="{{ mod.id }}">{{ mod.name }}</option>
+                {% endfor %}
+            </select>
+            <button onclick="applyFilter()" style="padding: 0.5rem 1rem; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Aplicar</button>
+        </section>
+
         <section class="dashboard-grid">
             <!-- Daily Mission Summary -->
             <a href="/agenda" style="text-decoration: none; color: inherit;">
@@ -130,5 +147,17 @@
         }, 100);
     </script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        function applyFilter() {
+            const bancaId = document.getElementById('filter-banca').value;
+            const disciplinaId = document.getElementById('filter-disciplina').value;
+            
+            const params = new URLSearchParams();
+            if (bancaId) params.set('banca', bancaId);
+            if (disciplinaId) params.set('disciplina', disciplinaId);
+            
+            window.location.href = '/?' + params.toString();
+        }
+    </script>
 </body>
 </html>

@@ -1310,25 +1310,15 @@ login_manager.login_message_category = "error"
 
 
 class User(UserMixin):
-    def __init__(
-        self,
-        id,
-        username,
-        concurso_id=None,
-        banca_id=None,
-        disciplina_id=None,
-        concurso_nome="",
-    ):
+    def __init__(self, id, username, cargo_id, cargo_name=""):
         self.id = id
         self.username = username
-        self.concurso_id = concurso_id
-        self.banca_id = banca_id
-        self.disciplina_id = disciplina_id
-        self.concurso_nome = concurso_nome
+        self.cargo_id = cargo_id
+        self.cargo_name = cargo_name
 
     @property
-    def effective_concurso_id(self):
-        return self.concurso_id if self.concurso_id is not None else 1
+    def effective_cargo_id(self):
+        return self.cargo_id if self.cargo_id is not None else 1
 
 
 @login_manager.user_loader
@@ -1337,9 +1327,9 @@ def load_user(user_id):
     try:
         row = conn.execute(
             """
-            SELECT u.*, c.nome AS concurso_nome
+            SELECT u.*, c.name AS cargo_name
             FROM users u
-            LEFT JOIN concursos c ON u.concurso_id = c.id
+            LEFT JOIN cargos c ON u.cargo_id = c.id
             WHERE u.id = ?
         """,
             (user_id,),
@@ -1351,10 +1341,8 @@ def load_user(user_id):
         return User(
             row["id"],
             row["username"],
-            row["concurso_id"],
-            row["banca_id"],
-            row["disciplina_id"],
-            row.get("concurso_nome", ""),
+            row["cargo_id"],
+            row.get("cargo_name", ""),
         )
     return None
 
@@ -1365,9 +1353,7 @@ def login():
     if current_user.is_authenticated:
         return redirect(url_for("index"))
 
-    concursos = get_concursos()
-    bancas = get_bancas()
-    disciplinas = get_disciplinas()
+    cargos = get_cargos()
 
     if request.method == "POST":
         action = request.form.get("action")
@@ -1376,59 +1362,29 @@ def login():
 
         if not username or not password:
             flash("Preencha todos os campos.", "error")
-            return render_template(
-                "login.html",
-                concursos=concursos,
-                bancas=bancas,
-                disciplinas=disciplinas,
-            )
+            return render_template("login.html", cargos=cargos)
 
         conn = get_db_connection()
 
         if action == "register":
-            concurso_id = (
-                int(request.form.get("concurso_id", 1))
-                if request.form.get("concurso_id")
-                else None
-            )
-            banca_id = (
-                int(request.form.get("banca_id"))
-                if request.form.get("banca_id")
-                else None
-            )
-            disciplina_id = (
-                int(request.form.get("disciplina_id"))
-                if request.form.get("disciplina_id")
-                else None
-            )
+            cargo_id = int(request.form.get("cargo_id", 1))
 
             if conn.execute(
                 "SELECT id FROM users WHERE username = ?", (username,)
             ).fetchone():
                 flash("Nome de usuario ja existe. Escolha outro.", "error")
                 conn.close()
-                return render_template(
-                    "login.html",
-                    concursos=concursos,
-                    bancas=bancas,
-                    disciplinas=disciplinas,
-                )
+                return render_template("login.html", cargos=cargos)
 
             conn.execute(
-                "INSERT INTO users (username, password_hash, concurso_id, banca_id, disciplina_id) VALUES (?, ?, ?, ?, ?)",
-                (
-                    username,
-                    generate_password_hash(password),
-                    concurso_id,
-                    banca_id,
-                    disciplina_id,
-                ),
+                "INSERT INTO users (username, password_hash, cargo_id) VALUES (?, ?, ?)",
+                (username, generate_password_hash(password), cargo_id),
             )
             conn.commit()
             row = conn.execute(
                 """
-                SELECT u.*, c.nome AS concurso_nome
-                FROM users u LEFT JOIN concursos c ON u.concurso_id = c.id
+                SELECT u.*, c.name AS cargo_name
+                FROM users u LEFT JOIN cargos c ON u.cargo_id = c.id
                 WHERE u.username = ?
             """,
                 (username,),
@@ -1436,12 +1392,7 @@ def login():
             conn.close()
             login_user(
                 User(
-                    row["id"],
-                    row["username"],
-                    row.get("concurso_id"),
-                    row.get("banca_id"),
-                    row.get("disciplina_id"),
-                    row.get("concurso_nome", ""),
+                    row["id"], row["username"], row["cargo_id"], row["cargo_name"] or ""
                 )
             )
             flash(f"Bem-vindo(a), {username}! Conta criada.", "success")
@@ -1450,8 +1401,8 @@ def login():
         else:  # login
             row = conn.execute(
                 """
-                SELECT u.*, c.nome AS concurso_nome
-                FROM users u LEFT JOIN concursos c ON u.concurso_id = c.id
+                SELECT u.*, c.name AS cargo_name
+                FROM users u LEFT JOIN cargos c ON u.cargo_id = c.id
                 WHERE u.username = ?
             """,
                 (username,),
@@ -1462,18 +1413,14 @@ def login():
                     User(
                         row["id"],
                         row["username"],
-                        row.get("concurso_id"),
-                        row.get("banca_id"),
-                        row.get("disciplina_id"),
-                        row.get("concurso_nome", ""),
+                        row["cargo_id"],
+                        row["cargo_name"] or "",
                     )
                 )
                 return redirect(url_for("index"))
             flash("Usuario ou senha incorretos.", "error")
 
-    return render_template(
-        "login.html", concursos=concursos, bancas=bancas, disciplinas=disciplinas
-    )
+    return render_template("login.html", cargos=cargos)
 
 
 @app.route("/logout")
@@ -1489,23 +1436,25 @@ def logout():
 def index():
     conn = get_db_connection()
 
-    # Módulos do cargo do usuário  +  módulos compartilhados (cargo_id IS NULL)
+    # Get filter parameters from query string
+    filter_banca = request.args.get("banca", type=int)
+    filter_disciplina = request.args.get("disciplina", type=int)
+
+    # Módulos do cargo do usuário + módulos compartilhados (cargo_id IS NULL)
     modules = conn.execute(
         """
         SELECT * FROM modules
-        WHERE (concurso_id = ? OR concurso_id IS NULL)
-          AND (banca_id = ? OR ? IS NULL)
-          AND (id = ? OR ? IS NULL)
+        WHERE cargo_id = ? OR cargo_id IS NULL
         ORDER BY id
     """,
-        (
-            current_user.concurso_id,
-            current_user.banca_id,
-            current_user.banca_id,
-            current_user.disciplina_id,
-            current_user.disciplina_id,
-        ),
+        (current_user.effective_cargo_id,),
     ).fetchall()
+
+    # Apply filters if present
+    if filter_banca:
+        modules = [m for m in modules if m.get("banca_id") == filter_banca]
+    if filter_disciplina:
+        modules = [m for m in modules if m.get("id") == filter_disciplina]
 
     today_str = datetime.now().strftime("%Y-%m-%d")
     today_classes_count = conn.execute(
@@ -1644,24 +1593,17 @@ def toggle_class():
     )
     conn.commit()
 
-    # Totais específicos do filtro do usuário
+    # Totais específicos do cargo do usuário
+    cargo_id = current_user.effective_cargo_id
     total_minutes = (
         conn.execute(
             """
         SELECT SUM(c.duration_minutes)
         FROM classes c
         JOIN modules m ON c.module_id = m.id
-        WHERE (m.concurso_id = ? OR m.concurso_id IS NULL)
-          AND (m.banca_id = ? OR ? IS NULL)
-          AND (m.id = ? OR ? IS NULL)
+        WHERE m.cargo_id = ? OR m.cargo_id IS NULL
     """,
-            (
-                current_user.concurso_id,
-                current_user.banca_id,
-                current_user.banca_id,
-                current_user.disciplina_id,
-                current_user.disciplina_id,
-            ),
+            (cargo_id,),
         ).fetchone()[0]
         or 0
     )
@@ -1674,18 +1616,9 @@ def toggle_class():
         JOIN modules m        ON c.module_id = m.id
         JOIN user_progress up ON c.id = up.class_id
         WHERE up.user_id = ? AND up.is_completed = 1
-          AND (m.concurso_id = ? OR m.concurso_id IS NULL)
-          AND (m.banca_id = ? OR ? IS NULL)
-          AND (m.id = ? OR ? IS NULL)
+          AND (m.cargo_id = ? OR m.cargo_id IS NULL)
     """,
-            (
-                current_user.id,
-                current_user.concurso_id,
-                current_user.banca_id,
-                current_user.banca_id,
-                current_user.disciplina_id,
-                current_user.disciplina_id,
-            ),
+            (current_user.id, cargo_id),
         ).fetchone()[0]
         or 0
     )
@@ -1708,8 +1641,8 @@ def generate_schedule_route():
     from generate_schedule import generate_schedule_for_user
 
     start_date = datetime.now().strftime("%Y-%m-%d")
-    concurso_id = current_user.concurso_id
-    days = generate_schedule_for_user(current_user.id, start_date, concurso_id)
+    cargo_id = current_user.effective_cargo_id
+    days = generate_schedule_for_user(current_user.id, start_date, cargo_id)
     return jsonify({"success": True, "message": f"Cronograma gerado ({days} dias)!"})
 
 
