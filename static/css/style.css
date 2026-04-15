@@ -29,10 +29,86 @@ body {
   max-width: 1200px;
   margin: 0 auto;
 }
+.app-header {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+}
 
-header {
-  text-align: center;
-  margin-bottom: 3rem;
+.app-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.app-branding {
+  text-align: left;
+}
+
+.app-title {
+  margin-bottom: 0.35rem;
+}
+
+.app-subtitle {
+  color: var(--text-muted);
+  font-size: 1rem;
+}
+
+.app-user-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.user-badge {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  background: rgba(255,255,255,0.05);
+  padding: 0.3rem 0.75rem;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+}
+
+.logout-btn {
+  font-size: 0.8rem;
+  color: #f87171;
+  text-decoration: none;
+  padding: 0.3rem 0.75rem;
+  border-radius: 99px;
+  border: 1px solid rgba(239,68,68,0.35);
+  transition: background 0.2s;
+}
+
+.logout-btn:hover {
+  background: rgba(239,68,68,0.1);
+}
+
+.app-nav {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.app-nav-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  transition: all 0.2s;
+}
+
+.app-nav-link:hover {
+  background: rgba(255,255,255,0.05);
+  color: var(--text-main);
+}
+
+.app-nav-link-active {
+  color: var(--primary);
+  border-color: var(--primary);
+  font-weight: 700;
 }
 
 h1 {
@@ -44,10 +120,6 @@ h1 {
   margin-bottom: 0.5rem;
 }
 
-header p {
-  color: var(--text-muted);
-  font-size: 1.1rem;
-}
 
 /* Glassmorphism Cards */
 .glass-card {
@@ -254,4 +326,71 @@ header p {
 
 .saved::after {
     content: '✓ salvo';
+}
+
+.app-footer {
+  margin-top: 2.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 900px) {
+  body {
+    padding: 1rem;
+  }
+
+  .glass-card {
+    padding: 1.25rem;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .modules-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .app-header-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .app-user-actions {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .app-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .app-nav {
+    flex-direction: column;
+  }
+
+  .app-nav-link {
+    width: 100%;
+    text-align: center;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+  }
 }

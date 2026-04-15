@@ -1,0 +1,22 @@
+<header class="app-header glass-card">
+    <div class="app-header-top">
+        <div class="app-branding">
+            <h1 class="app-title">{{ header_title|default('TJ-SC 2026 Tracker') }}</h1>
+            {% if header_subtitle %}
+            <p class="app-subtitle">{{ header_subtitle }}</p>
+            {% endif %}
+        </div>
+        {% if show_user_badge %}
+        <div class="app-user-actions">
+            <span class="user-badge">👤 {{ username }}</span>
+            <a href="{{ url_for('logout') }}" class="logout-btn">Sair</a>
+        </div>
+        {% endif %}
+    </div>
+    {% if show_nav %}
+    <nav class="app-nav" aria-label="Navegação principal">
+        <a href="/" class="app-nav-link {% if active_page == 'index' %}app-nav-link-active{% endif %}">Edital Completo</a>
+        <a href="/agenda" class="app-nav-link {% if active_page == 'agenda' %}app-nav-link-active{% endif %}">Minha Agenda</a>
+    </nav>
+    {% endif %}
+</header>

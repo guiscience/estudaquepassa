@@ -11,21 +11,12 @@
 </head>
 <body>
     <div class="container">
-        <header>
-            <div style="display: flex; flex-direction: column; align-items: center; position: relative;">
-                <!-- User badge + logout -->
-                <div style="position: absolute; top: 0; right: 0; display: flex; align-items: center; gap: 0.6rem;">
-                    <span style="font-size: 0.8rem; color: var(--text-muted); background: rgba(255,255,255,0.05); padding: 0.3rem 0.75rem; border-radius: 99px; border: 1px solid var(--border);">👤 {{ username }}</span>
-                    <a href="{{ url_for('logout') }}" style="font-size: 0.8rem; color: #f87171; text-decoration: none; padding: 0.3rem 0.75rem; border-radius: 99px; border: 1px solid rgba(239,68,68,0.35); transition: background 0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.1)'" onmouseout="this.style.background=''">Sair</a>
-                </div>
-                <h1>TJ-SC 2026 Tracker</h1>
-                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
-                    <a href="/" style="color: var(--primary); font-weight: 700; text-decoration: none; font-size: 0.9rem; padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid var(--primary);">Edital Completo</a>
-                    <a href="/agenda" style="color: var(--text-muted); text-decoration: none; font-size: 0.9rem; padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid var(--border);">Minha Agenda</a>
-                </div>
-            </div>
-            <p style="text-align: center; margin-top: 1rem;">Seu planejamento estratégico focado 100% no edital e aulas do Focus</p>
-        </header>
+        {% set header_title = 'TJ-SC 2026 Tracker' %}
+        {% set header_subtitle = 'Seu planejamento estratégico focado 100% no edital e aulas do Focus' %}
+        {% set show_user_badge = true %}
+        {% set show_nav = true %}
+        {% set active_page = 'index' %}
+        {% include 'partials/header.html' %}
 
         <section class="dashboard-grid">
             <!-- Daily Mission Summary -->
@@ -95,6 +86,7 @@
                 {% endfor %}
             </div>
         </section>
+        {% include 'partials/footer.html' %}
     </div>
 
     <!-- Pass initial data to JS -->

@@ -8,40 +8,16 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <style>
-        .nav-links { display: flex; gap: 1rem; margin-top: 1rem; }
-        .nav-btn { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid var(--border); }
-        .nav-btn:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
-        .nav-active { border-color: var(--primary); color: var(--primary); }
-        
-        .agenda-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 2rem; }
-        .date-badge { background: var(--primary); color: white; padding: 0.2rem 1rem; border-radius: 99px; font-size: 0.9rem; font-weight: 700; }
-        
-        .mission-status { margin-bottom: 2rem; }
-        
-        .agenda-item { display: flex; flex-direction: column; gap: 0.5rem; }
-        .module-tag { font-size: 0.75rem; color: #60a5fa; text-transform: uppercase; font-weight: 700; }
-        
-        .preview-bar { display: flex; gap: 0.5rem; margin-top: 2rem; overflow-x: auto; padding-bottom: 1rem; }
-        .preview-card { min-width: 150px; text-align: center; cursor: pointer; }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/agenda.css') }}">
 </head>
 <body>
     <div class="container">
-        <header>
-            <div style="display: flex; flex-direction: column; align-items: center; position: relative;">
-                <!-- User badge + logout -->
-                <div style="position: absolute; top: 0; right: 0; display: flex; align-items: center; gap: 0.6rem;">
-                    <span style="font-size: 0.8rem; color: var(--text-muted); background: rgba(255,255,255,0.05); padding: 0.3rem 0.75rem; border-radius: 99px; border: 1px solid var(--border);">👤 {{ username }}</span>
-                    <a href="{{ url_for('logout') }}" style="font-size: 0.8rem; color: #f87171; text-decoration: none; padding: 0.3rem 0.75rem; border-radius: 99px; border: 1px solid rgba(239,68,68,0.35); transition: background 0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.1)'" onmouseout="this.style.background=''">Sair</a>
-                </div>
-                <h1>Missão do Dia</h1>
-                <div class="nav-links">
-                    <a href="/" class="nav-btn">Edital Completo</a>
-                    <a href="/agenda" class="nav-btn nav-active">Minha Agenda</a>
-                </div>
-            </div>
-        </header>
+        {% set header_title = 'Missão do Dia' %}
+        {% set header_subtitle = 'Organize sua rotina e mantenha a consistência do estudo.' %}
+        {% set show_user_badge = true %}
+        {% set show_nav = true %}
+        {% set active_page = 'agenda' %}
+        {% include 'partials/header.html' %}
 
         <section class="agenda-header">
             <div>
@@ -106,31 +82,10 @@
             </a>
             {% endfor %}
         </div>
+        {% include 'partials/footer.html' %}
     </div>
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    <script>
-        async function generateSchedule() {
-            const btn = document.querySelector('button[onclick="generateSchedule()"]');
-            btn.textContent = 'Gerando...';
-            btn.disabled = true;
-            
-            try {
-                const resp = await fetch('/api/generate_schedule', { method: 'POST' });
-                const data = await resp.json();
-                if (data.success) {
-                    location.reload();
-                } else {
-                    alert('Erro: ' + data.message);
-                    btn.textContent = 'Gerar Cronograma';
-                    btn.disabled = false;
-                }
-            } catch(e) {
-                alert('Erro ao gerar cronograma');
-                btn.textContent = 'Gerar Cronograma';
-                btn.disabled = false;
-            }
-        }
-    </script>
+    <script src="{{ url_for('static', filename='js/pages/agenda.js') }}"></script>
 </body>
 </html>
