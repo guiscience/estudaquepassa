@@ -9,47 +9,95 @@ USE_PG = os.environ.get("DATABASE_URL") is not None
 # Higher questions = higher priority to study first
 
 ANALISTA_PRIORITY = {
-    # Módulo Conhecimentos Gerais (30 questões)
+    # Modulo Conhecimentos Gerais (30 questoes)
     "Portugues - Douglas Wisniewski": 10,
+    "Portugues": 10,
     "Legislacao Institucional": 6,
+    "Legislacao": 6,
     "Etica e Gestao no Servico Publico": 4,
+    "Etica": 4,
     "Informatica e LGPD": 5,
+    "Informatica": 5,
     "Direitos Humanos": 5,
-    # Módulo Conhecimentos Específicos (50 questões)
+    # Modulo Conhecimentos Especificos (50 questoes)
     "Administracao Geral": 12,
+    "Admin Geral": 12,
     "Gestao de Pessoas": 8,
     "Adm de Materiais": 6,
+    "Materiais": 6,
     "Administracao Publica": 10,
+    "Adm Publica": 10,
     "AFO": 10,
     "Transparencia e Controle": 4,
+    "Transparencia": 4,
+    "LAI": 4,
 }
 
 TECNICO_PRIORITY = {
-    # Módulo Conhecimentos Gerais (30 questões)
+    # Modulo Conhecimentos Gerais (30 questoes)
     "Portugues - Janaina Souto": 10,
+    "Portugues": 10,
+    "Lingua Portuguesa": 10,
     "Legislacao Institucional": 6,
+    "Legislacao": 6,
+    "PJSC": 6,
     "Etica e Gestao no Servico Publico": 4,
-    "Informatica - Leo Matos": 5,
+    "Etica": 4,
+    "Informatica": 5,
+    "Informatica e Protecao de Dados": 5,
     "Direitos Humanos": 5,
-    # Módulo Conhecimentos Específicos (50 questões)
+    "Acesso a justica": 5,
+    # Modulo Conhecimentos Especificos (50 questoes)
     "Direito Administrativo": 10,
     "Direito Constitucional": 8,
+    "Constitutional": 8,
     "Direito Civil": 6,
+    "Civil": 6,
     "Direito Processual Civil": 10,
+    "Processual Civil": 10,
+    "Direito Processual": 10,
     "Direito Penal": 6,
+    "Penal": 6,
     "Direito Processual Penal": 10,
+    "Processual Penal": 10,
+    # Modulo Compartilhado (ambas as prioridades)
+    "Transparencia": 4,
+    "LAI": 4,
 }
 
 
 def get_module_priority(module_name, cargo_id):
-    """Retorna a prioridade (número de questões) de um módulo baseado no cargo."""
+    """Retorna a prioridade (numero de questoes) de um modulo baseado no cargo."""
     if cargo_id == 1:  # Analista
         priority_map = ANALISTA_PRIORITY
     else:  # Tecnico
         priority_map = TECNICO_PRIORITY
 
+    # Normalize - remove accents for matching
+    module_lower = module_name.lower()
+    replacements = {
+        "ã": "a",
+        "á": "a",
+        "à": "a",
+        "â": "a",
+        "é": "e",
+        "ê": "e",
+        "í": "i",
+        "ó": "o",
+        "ô": "o",
+        "õ": "o",
+        "ú": "u",
+        "ç": "c",
+        "ã": "a",
+    }
+    for old, new in replacements.items():
+        module_lower = module_lower.replace(old, new)
+
     for key, priority in priority_map.items():
-        if key.lower() in module_name.lower():
+        key_normalized = key.lower()
+        for old, new in replacements.items():
+            key_normalized = key_normalized.replace(old, new)
+        if key_normalized in module_lower:
             return priority
     return 0  # Default lowest priority
 
