@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // ==== Countdown Timer to June 28, 2026 ====
     const examDate = new Date('2026-06-28T00:00:00');
     
     function updateTimer() {
@@ -22,12 +21,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('minutes').innerText = minutes.toString().padStart(2, '0');
     }
 
-    setInterval(updateTimer, 60000); // update every minute
-    updateTimer(); // initial call
+    setInterval(updateTimer, 60000);
+    updateTimer();
 
-    // ==== Progress and Daily Goal logic ====
-    
-    // Checkboxes interaction
     const checkboxes = document.querySelectorAll('.class-status-checkbox');
     
     checkboxes.forEach(checkbox => {
@@ -35,7 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const classId = e.target.dataset.id;
             const isCompleted = e.target.checked;
             
-            // Visual toggle (strikethrough)
             const textSpan = e.target.nextElementSibling.nextElementSibling;
             if(isCompleted) {
                 textSpan.classList.add('checked-text');
@@ -43,10 +38,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 textSpan.classList.remove('checked-text');
             }
 
-            // Show saving indicator
             textSpan.classList.add('saving');
 
-            // Sync with backend
             try {
                 const response = await fetch('/api/toggle_class', {
                     method: 'POST',
@@ -60,26 +53,35 @@ document.addEventListener('DOMContentLoaded', () => {
                     textSpan.classList.remove('saving');
                     textSpan.classList.add('saved');
                     setTimeout(() => textSpan.classList.remove('saved'), 1500);
+                    
+                    // Notify other tabs/pages to update
+                    localStorage.setItem('class_status_changed', Date.now().toString());
                 }
             } catch (error) {
                 console.error("Error updating progress:", error);
                 textSpan.classList.remove('saving');
-                // Revert checkbox on error
                 e.target.checked = !isCompleted;
             }
         });
     });
 
     function updateDashboard(total, completed) {
-        // Calculate Percentage
         const percentage = total > 0 ? ((completed / total) * 100).toFixed(1) : 0;
-        document.getElementById('overall-progress-text').innerText = `${percentage}%`;
-        document.getElementById('overall-progress-bar').style.width = `${percentage}%`;
         
-        // Calculate daily goal
+        const progressText = document.getElementById('overall-progress-text');
+        const progressBar = document.getElementById('overall-progress-bar');
+        
+        if (progressText) progressText.innerText = `${percentage}%`;
+        if (progressBar) progressBar.style.width = `${percentage}%`;
+        
         const now = new Date();
         const daysLeft = Math.ceil((examDate - now) / (1000 * 60 * 60 * 24));
         const minutesRemaining = total - completed;
+        
+        const dailyGoal = document.getElementById('daily-goal');
+        const dailyGoalDesc = document.getElementById('daily-goal-desc');
+        
+        if (!dailyGoal) return;
         
         if (daysLeft > 0 && minutesRemaining > 0) {
             const minsPerDay = Math.ceil(minutesRemaining / daysLeft);
@@ -90,16 +92,25 @@ document.addEventListener('DOMContentLoaded', () => {
             if (hrs > 0) timeStr += `${hrs}h`;
             if (rMins > 0) timeStr += `${rMins}m`;
             
-            document.getElementById('daily-goal').innerText = timeStr || "0m";
-            document.getElementById('daily-goal-desc').innerText = "Por dia para fechar o edital";
-        } else if (minutesRemaining <= 0) {
-            document.getElementById('daily-goal').innerText = "Meta Atingida!";
-            document.getElementById('daily-goal').classList.remove('primary-text');
-            document.getElementById('daily-goal').classList.add('accent-text');
-            document.getElementById('daily-goal-desc').innerText = "Revisar conteúdo!";
+            dailyGoal.innerText = timeStr || "0m";
+            if (dailyGoalDesc) dailyGoalDesc.innerText = "Por dia para fechar o edital";
+        } else if (minutesRemaining <= 0 && total > 0) {
+            dailyGoal.innerText = "Meta Atingida!";
+            dailyGoal.classList.remove('primary-text');
+            dailyGoal.classList.add('accent-text');
+            if (dailyGoalDesc) dailyGoalDesc.innerText = "Revisar conteúdo!";
+        } else if (total === 0) {
+            dailyGoal.innerText = "N/A";
+            if (dailyGoalDesc) dailyGoalDesc.innerText = "Nenhuma aula inserida";
         } else {
-            document.getElementById('daily-goal').innerText = "Prova Hoje!";
+            dailyGoal.innerText = "Prova Hoje!";
         }
     }
 
+    // Listen for changes from other tabs
+    window.addEventListener('storage', (e) => {
+        if (e.key === 'class_status_changed') {
+            location.reload();
+        }
+    });
 });
