@@ -45,7 +45,13 @@
 
         <section class="agenda-header">
             <div>
-                <h2 style="font-size: 1.5rem;">Cronograma: <span class="primary-text">{{ current_date }}</span></h2>
+                <h2 style="font-size: 1.5rem;">
+                    {% if day_total == 0 %}
+                    Cronograma não gerado - Clique em Gerar
+                    {% else %}
+                    Cronograma: <span class="primary-text">{{ current_date }}</span>
+                    {% endif %}
+                </h2>
                 <button onclick="generateSchedule()" style="margin-top: 0.5rem; padding: 0.5rem 1rem; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Gerar Cronograma</button>
             </div>
             <div class="date-badge">
