@@ -175,14 +175,34 @@ if USE_PG:
         cur.execute(
             """CREATE TABLE IF NOT EXISTS cargos (id SERIAL PRIMARY KEY, name TEXT)"""
         )
-        cur.execute(
-            """CREATE TABLE IF NOT EXISTS concursos (id SERIAL PRIMARY KEY, nome TEXT NOT NULL)"""
-        )
-        cur.execute(
-            """CREATE TABLE IF NOT EXISTS bancas (id SERIAL PRIMARY KEY, nome TEXT NOT NULL)"""
-        )
+
+        # Create new tables if they don't exist
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS concursos (
+                id SERIAL PRIMARY KEY, 
+                nome TEXT NOT NULL
+            )
+        """)
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS bancas (
+                id SERIAL PRIMARY KEY, 
+                nome TEXT NOT NULL
+            )
+        """)
+
+        # Check if we need to seed data
         cur.execute("SELECT COUNT(*) FROM classes")
         if cur.fetchone()[0] > 0:
+            # Tables exist with data - check if new tables need data
+            cur.execute("SELECT COUNT(*) FROM concursos")
+            if cur.fetchone()[0] == 0:
+                cur.execute(
+                    "INSERT INTO concursos (nome) VALUES ('TJ-SC - Tribunal de Justiça de Santa Catarina')"
+                )
+                cur.execute("INSERT INTO bancas (nome) VALUES ('FGV')")
+                cur.execute("INSERT INTO bancas (nome) VALUES ('CESPE')")
+                cur.execute("INSERT INTO bancas (nome) VALUES ('FCC')")
+                conn.commit()
             raise RuntimeError("DB_ALREADY_INITIALIZED")
 
         cur.execute(
