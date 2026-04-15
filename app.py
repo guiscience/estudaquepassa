@@ -612,9 +612,13 @@ if USE_PG:
             ("Lei 12.846/13 - Processo de Responsabilizacao", 24),
             ("Lei 12.846/13 - Acordo de Leniencia", 28),
             ("Lei 12.846/13 - Disposicoes Finais", 16),
-            ("Deveres e responsabilidades do servidor", 0),
-            ("Integridade institucional no Poder Jhudiciario", 0),
-            ("Resolucao TJ 22/2021 do TJSC", 0),
+            ("Gestao de pessoas e comportamento organizacional", 30),
+            ("Trabalho em equipe, comunicacao e atitudes eticas", 30),
+            ("Integridade institucional no Poder Judiario", 30),
+            ("Resolucao TJ 22/2021 do TJSC", 25),
+            ("Deveres e responsabilidades do servidor", 30),
+            ("Conduta, sancoes e processos disciplinares", 30),
+            ("Nocoes de improbidade administrativa", 30),
         ]
 
         for title, dur in etica_classes:
@@ -950,39 +954,241 @@ if USE_PG:
             )
 
         cur.execute(
-            "INSERT INTO modules (id, name, cargo_id) VALUES (14, 'Direito Penal (Tecnico)', 2)"
+            "INSERT INTO modules (id, name, cargo_id) VALUES (14, 'Direito Penal - Lucas Henrique Favero (Tecnico)', 2)"
         )
-        for i in range(1, 13):
+
+        penal_tec_classes = [
+            ("Principios do Direito Penal", 116),
+            ("Questoes de Principios", 25),
+            (
+                "Aplicacao da Lei Penal - Parte 1 - Anterioridade da lei, Lei penal no tempo",
+                59,
+            ),
+            (
+                "Aplicacao da Lei Penal - Parte 2 - Tempo do crime, territorialidade e lugar do crime",
+                55,
+            ),
+            (
+                "Aplicacao da Lei Penal - Parte 3 - Extraterritorialidade e legislacao especial",
+                60,
+            ),
+            ("Revisao - Lei Esquematizada - Aplicacao da Lei Penal", 34),
+            ("Questoes de Aplicacoes da Lei Penal", 36),
+            ("Teoria do Crime: O fato tipico e seus elementos - Parte 1", 81),
+            ("Teoria do Crime: O fato tipico e seus elementos - Parte 2", 89),
+            ("Excludentes de ilicitude; Estado de necessidade; Legitima defesa", 102),
+            (
+                "Potencial consciencia da ilicitude; Erro de Proibicao; Imputabilidade",
+                82,
+            ),
+            ("Teoria do Erro - Erro de Tipo e suas modalidades", 114),
+            ("Revisao - Lei Esquematizada - Teoria do Crime", 33),
+            ("Revisao - Lei Esquematizada - Imputabilidade Penal", 8),
+            ("Questoes de Teoria do Crime - Parte I", 30),
+            ("Questoes de Teoria do Crime - Parte II", 28),
+            ("Questoes de Teoria do Crime - Parte III", 65),
+            ("Questoes de Teoria do Crime - Parte IV", 60),
+            ("Questoes de Teoria do Crime - Parte V", 61),
+            ("Questoes de Teoria do Crime - Parte VI", 34),
+            ("Questoes de Culpabilidade - Parte I", 25),
+            ("Questoes de Culpabilidade - Parte II", 36),
+            ("Questoes de Culpabilidade - Parte III", 49),
+            ("Crimes contra a pessoa - Parte I", 69),
+            ("Crimes contra a pessoa - Parte II", 53),
+            ("Crimes contra a pessoa - Parte III", 16),
+            ("Crimes contra a pessoa - Parte IV", 51),
+            ("Crimes contra a pessoa - Parte V", 79),
+            ("Crimes contra a pessoa - Parte VI", 24),
+            ("Crimes contra a pessoa - Parte VII", 10),
+            ("Questoes de Crimes Contra a Pessoa - Parte I", 63),
+            ("Questoes de Crimes Contra a Pessoa - Parte II", 61),
+            ("Questoes de Crimes Contra a Pessoa - Parte III", 62),
+            ("Questoes de Crimes Contra a Pessoa - Parte IV", 62),
+            ("Questoes de Crimes Contra a Pessoa - Parte V", 62),
+            ("Questoes de Crimes Contra a Pessoa - Parte VI", 64),
+            ("Questoes de Crimes Contra a Pessoa - Parte VII", 53),
+            ("Crimes contra o patrimonio - Parte I", 93),
+            ("Crimes contra o patrimonio - Parte II", 76),
+            ("Crimes contra o patrimonio - Parte III", 4),
+            ("Crimes contra a Administracao Publica", 64),
+            ("Crimes Contra a Administracao da Justica", 79),
+            ("Revisao - Lei Esquematizada - Crimes contra a Admin Publica", 43),
+            ("Crimes Hediondos - Lei 8072/1990", 51),
+            ("Crimes de abuso de autoridade - Lei 13.869/2019 - Parte I", 66),
+            ("Crimes de abuso de autoridade - Lei 13.869/2019 - Parte II", 9),
+            ("Estatuto da Crianca e do Adolescente - Dos Crimes - Parte I", 55),
+            ("Estatuto da Crianca e do Adolescente - Dos Crimes - Parte II", 57),
+            (
+                "Estatuto da Crianca e do Adolescente - Da Pratica de Ato Infracional",
+                30,
+            ),
+            ("Estatuto da Crianca e do Adolescente - Atualizacoes", 24),
+            ("Competencia das varas criminais do TJSC - Resolucao TJ 35/2025", 30),
+        ]
+
+        for title, dur in penal_tec_classes:
             cur.execute(
                 "INSERT INTO classes (module_id, title, duration_minutes) VALUES (14, %s, %s)",
-                (f"Direito Penal Aula {i}", 35),
+                (title, dur),
             )
 
         cur.execute(
-            "INSERT INTO modules (id, name, cargo_id) VALUES (15, 'Direito Processual Penal (Tecnico)', 2)"
+            "INSERT INTO modules (id, name, cargo_id) VALUES (15, 'Direito Processual Penal - Priscilla Fernandes (Tecnico)', 2)"
         )
-        for i in range(1, 12):
+
+        proc_penal_tec_classes = [
+            ("Principios - Parte I", 53),
+            ("Principios - Parte II", 48),
+            ("Principios - Parte III", 62),
+            ("Principios - Parte IV", 55),
+            ("Questoes de Processo Penal - Principios", 66),
+            ("Disposicoes Preliminares", 49),
+            ("Mapa da Lei - Memorize e Revise", 48),
+            ("Questoes de Processo Penal - Disposicoes Preliminares", 44),
+            ("Juiz das Garantias", 63),
+            ("Mapa da Lei - Memorize e Revise", 58),
+            ("Inquerito policial - Parte I", 61),
+            ("Inquerito policial - Parte II", 61),
+            ("Inquerito policial - Parte III", 67),
+            ("Mapa da Lei - Memorize e Revise", 63),
+            ("Questoes de Processo Penal - Inquerito Policial", 75),
+            ("Acao Penal", 61),
+            ("Mapa da Lei - Memorize e Revise", 62),
+            ("Questoes de Processo Penal - Acao Penal", 66),
+            ("Sujeitos Processuais: Juiz, MP, Acusado, Defensor, Assistentes", 64),
+            ("Mapa da Lei - Memorize e Revise", 58),
+            ("Citacoes e Intimacoes", 56),
+            ("Sentenca - Parte I", 67),
+            ("Sentenca - Parte II", 73),
+            ("Procedimentos - Processo Comum - Parte I", 63),
+            ("Procedimentos - Processo Comum - Parte II", 76),
+            ("Procedimentos - Processo Comum - Parte III", 65),
+            ("Procedimentos - Processo Comum - Parte IV", 68),
+            ("Questoes de Processo Penal - Procedimentos", 47),
+            ("Habeas Corpus", 55),
+            ("Medidas cautelares diversas da prisao - Parte I", 64),
+            ("Medidas cautelares diversas da prisao - Parte II", 37),
+            ("Prisao em flagrante - Parte I", 62),
+            ("Prisao em flagrante - Parte II", 58),
+            ("Prisao em Flagrante - Parte III", 27),
+            ("Questoes de Processo Penal - Prisao em flagrante", 66),
+            ("Prisao Preventiva - Parte II", 13),
+            ("Prisao Preventiva - Parte I", 62),
+            ("Questoes de Processo Penal - Prisao preventiva", 64),
+            ("Prisao domiciliar", 28),
+            ("Questoes de Processo Penal - Prisao domiciliar", 57),
+            ("Prisao temporaria", 65),
+            ("Questoes de Processo Penal - Prisao temporaria", 60),
+            ("Liberdade provisoria", 37),
+            ("Das Outras Medidas Cautelares", 67),
+        ]
+
+        for title, dur in proc_penal_tec_classes:
             cur.execute(
                 "INSERT INTO classes (module_id, title, duration_minutes) VALUES (15, %s, %s)",
-                (f"Proc Penal Aula {i}", 35),
+                (title, dur),
             )
 
         cur.execute(
-            "INSERT INTO modules (id, name, cargo_id) VALUES (16, 'Direito Processual Civil (Tecnico)', 2)"
+            "INSERT INTO modules (id, name, cargo_id) VALUES (16, 'Direito Processual Civil - Raquel Bueno (Tecnico)', 2)"
         )
-        for i in range(1, 8):
+
+        proc_civil_tec_classes = [
+            ("Normas Fundamentais do Processo Civil - Parte 1", 31),
+            ("Normas Fundamentais do Processo Civil - Parte 2", 31),
+            ("Normas Fundamentais do Processo Civil - Parte 3", 32),
+            ("Normas Fundamentais do Processo Civil - Parte 4", 32),
+            ("Normas Fundamentais do Processo Civil - Parte 5", 37),
+            ("Aplicacao das Normas Processuais - Art. 13 ao Art. 15", 15),
+            ("Jurisdicao - Parte 1", 32),
+            ("Jurisdicao - Parte 2", 33),
+            ("Jurisdicao - Parte 3", 31),
+            ("Jurisdicao - Parte 4", 35),
+            ("Jurisdicao - Parte 5", 31),
+            ("Jurisdicao - Parte 6", 44),
+            ("Jurisdicao - Parte 7", 35),
+            ("Direito de Acao", 32),
+            ("Direito de Acao - Teorias Explicativas", 35),
+            ("Direito de Acao - Condicoes e Elementos da Acao", 33),
+            ("Direito de Acao - Elementos, Condicoes e Classificacao", 33),
+            ("Direito de Acao - Classificacao da Acao e Sucessao Processual", 35),
+            ("Direito de Acao - Questoes de Fixacao", 12),
+            ("Limites da Jurisdicao Nacional - Parte 1", 31),
+            ("Limites da Jurisdicao Nacional - Parte 2", 10),
+            ("Cooperacao Internacional - Disposicoes Gerais - Art. 26 ao 27", 15),
+            ("Cooperacao Internacional - Do Auxilio Direto - Art 28 ao 34", 26),
+            ("Cooperacao Internacional - Da Carta Rogatoria - Art. 35 e 36", 11),
+            ("Cooperacao Internacional - Disposicoes Comuns - Art. 37 ao 41", 9),
+            ("Competencia - Parte 1", 36),
+            ("Competencia - Parte 2", 34),
+            ("Competencia - Parte 3", 33),
+            ("Competencia - Parte 4", 32),
+            ("Competencia - Parte 5", 17),
+        ]
+
+        for title, dur in proc_civil_tec_classes:
             cur.execute(
                 "INSERT INTO classes (module_id, title, duration_minutes) VALUES (16, %s, %s)",
-                (f"Proc Civil Aula {i}", 35),
+                (title, dur),
             )
 
         cur.execute(
             "INSERT INTO modules (id, name, cargo_id) VALUES (17, 'Informatica - Leo Matos (Tecnico)', 2)"
         )
-        for i in range(1, 12):
+
+        info_tec_classes = [
+            ("Hardware - Parte I", 37),
+            ("Hardware - Parte II", 30),
+            ("Hardware - Parte III", 29),
+            ("Hardware - Parte IV", 28),
+            ("Hardware - Parte V", 30),
+            ("Hardware - Parte VI", 12),
+            ("Hardware - Revisao", 16),
+            ("Hardware - Questoes - Parte I", 24),
+            ("Hardware - Questoes - Parte II", 30),
+            ("Software", 26),
+            ("Sistema Operacional Windows 11 - Parte I", 72),
+            ("Sistema Operacional Windows 11 - Parte II", 96),
+            ("Sistema Operacional Windows 11 - Parte III", 73),
+            ("Questoes de Sistema Operacional Windows 11", 50),
+            ("Internet - Parte I", 55),
+            ("Internet - Parte II", 118),
+            ("Internet - Parte III", 48),
+            ("Questoes - Internet", 60),
+            ("Intranet", 43),
+            ("Questoes - Intranet", 37),
+            ("Busca e Pesquisa", 37),
+            ("Questoes - Busca e Pesquisa", 60),
+            ("Seguranca da Informacao - Antivirus - Parte I", 28),
+            ("Seguranca da Informacao - Firewall - Parte II", 25),
+            ("Seguranca da Informacao - BLOCO I - Parte III", 33),
+            ("Seguranca da Informacao - BLOCO I - Parte IV", 34),
+            ("Seguranca da Informacao - BLOCO I - Parte V", 31),
+            ("Seguranca da Informacao - BLOCO I - Parte VI", 34),
+            ("Seguranca da Informacao - BLOCO II - Parte I", 32),
+            ("Seguranca da Informacao - BLOCO II - Parte II", 30),
+            ("Seguranca da Informacao - BLOCO II - Parte III", 30),
+            ("Seguranca da Informacao - BLOCO II - Parte IV", 32),
+            ("Seguranca da Informacao - Revisao", 17),
+            ("Seguranca da Informacao - Questoes: BLOCO I - Parte I", 29),
+            ("Seguranca da Informacao - Questoes: BLOCO I - Parte II", 30),
+            ("Seguranca da Informacao - Questoes: BLOCO II - Parte I", 29),
+            ("Seguranca da Informacao - Questoes: BLOCO II - Parte II", 34),
+            ("Lei 13.709/2018 - LGPD - Introducao e Fundamentos", 61),
+            ("Lei 13.709/2018 - LGPD - Dos Requisitos para o Tratamento de Dados", 49),
+            ("Lei 13.709/2018 - LGPD - Dos Direitos do Titular", 41),
+            ("Lei 13.709/2018 - LGPD - Tratamento de Dados pelo Poder Publico", 32),
+            ("Lei 13.709/2018 - LGPD - Transferencia Internacional de Dados", 28),
+            ("Lei 13.709/2018 - LGPD - Controlador e Operador", 45),
+            ("Lei 13.709/2018 - LGPD - RESUMAO - Mapeando a Lei", 36),
+            ("Questoes da Lei 13.709/2018 - LGPD", 32),
+            ("Resolucao TJ 3/2021 do TJSC", 20),
+        ]
+
+        for title, dur in info_tec_classes:
             cur.execute(
                 "INSERT INTO classes (module_id, title, duration_minutes) VALUES (17, %s, %s)",
-                (f"Informatica Tec Aula {i}", 35),
+                (title, dur),
             )
 
         conn.commit()
