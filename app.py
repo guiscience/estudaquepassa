@@ -1663,6 +1663,11 @@ def toggle_class():
 
     now = int(datetime.now().timestamp())
 
+    # Certifica-se de que a coluna last_updated existe
+    conn.execute(
+        "ALTER TABLE user_progress ADD COLUMN IF NOT EXISTS last_updated INTEGER DEFAULT 0"
+    )
+
     conn.execute(
         """
         INSERT INTO user_progress (user_id, class_id, is_completed, last_updated)
