@@ -177,9 +177,39 @@ if USE_PG:
             "INSERT INTO modules (name, cargo_id) VALUES ('Informatica e Protecao de Dados (Tecnico)', 2) ON CONFLICT DO NOTHING"
         )
 
+        # Add sample classes (Português Analista - module 7)
+        sample_classes = [
+            (7, "Ortografia", 60),
+            (7, "Classes Gramaticais", 60),
+            (7, "Verbos", 60),
+            (7, "Concordancia Nominal", 45),
+            (7, "Concordancia Verbal", 45),
+            (7, "Regencia e Crase", 60),
+            (7, "Pontuacao", 60),
+            (7, "Interpretacao de Texto", 60),
+            # Shared modules
+            (8, "Hardware - Parte I", 35),
+            (8, "Hardware - Parte II", 30),
+            (8, "Windows 11", 60),
+            (8, "Internet e Redes", 45),
+            (8, "Seguranca da Informacao", 40),
+            (8, "LGPD", 30),
+            (13, "Transparencia Publica", 40),
+            (13, "LAI - Lei de Acesso a Informacao", 40),
+            (14, "Etica na Administracao Publica", 45),
+            (14, "Codigo de Etica", 45),
+            (14, "Probidade Administrativa", 40),
+        ]
+
+        for module_id, title, duration in sample_classes:
+            cur.execute(
+                "INSERT INTO classes (module_id, title, duration_minutes) VALUES (%s, %s, %s)",
+                (module_id, title, duration),
+            )
+
         conn.commit()
         conn.close()
-        print("PostgreSQL database initialized!")
+        print("PostgreSQL database initialized with sample classes!")
     except Exception as e:
         print(f"DB init error: {e}")
         sys.exit(1)
