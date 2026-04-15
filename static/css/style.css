@@ -227,6 +227,31 @@ header p {
 }
 
 .checked-text {
-  text-decoration: line-through;
-  color: var(--text-muted);
+    text-decoration: line-through;
+    opacity: 0.5;
+    transition: all 0.2s ease;
+}
+
+.saving {
+    color: #93c5fd;
+    opacity: 0.8;
+}
+
+.saved {
+    color: #86efac;
+    opacity: 0.9;
+}
+
+.saving::after, .saved::after {
+    margin-left: 8px;
+    font-size: 0.8rem;
+    vertical-align: middle;
+}
+
+.saving::after {
+    content: 'salvando...';
+}
+
+.saved::after {
+    content: '✓ salvo';
 }

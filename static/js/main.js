@@ -43,6 +43,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 textSpan.classList.remove('checked-text');
             }
 
+            // Show saving indicator
+            textSpan.classList.add('saving');
+
             // Sync with backend
             try {
                 const response = await fetch('/api/toggle_class', {
@@ -54,9 +57,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
                 if(data.success) {
                     updateDashboard(data.total_minutes, data.completed_minutes);
+                    textSpan.classList.remove('saving');
+                    textSpan.classList.add('saved');
+                    setTimeout(() => textSpan.classList.remove('saved'), 1500);
                 }
             } catch (error) {
                 console.error("Error updating progress:", error);
+                textSpan.classList.remove('saving');
+                // Revert checkbox on error
+                e.target.checked = !isCompleted;
             }
         });
     });
