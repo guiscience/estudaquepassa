@@ -1659,13 +1659,17 @@ def toggle_class():
     status_int = 1 if is_completed else 0
 
     conn = get_db_connection()
+    from datetime import datetime
+
+    now = int(datetime.now().timestamp())
+
     conn.execute(
         """
-        INSERT INTO user_progress (user_id, class_id, is_completed)
-        VALUES (?, ?, ?)
-        ON CONFLICT(user_id, class_id) DO UPDATE SET is_completed = ?
+        INSERT INTO user_progress (user_id, class_id, is_completed, last_updated)
+        VALUES (?, ?, ?, ?)
+        ON CONFLICT(user_id, class_id) DO UPDATE SET is_completed = ?, last_updated = ?
     """,
-        (current_user.id, class_id, status_int, status_int),
+        (current_user.id, class_id, status_int, now, status_int, now),
     )
     conn.commit()
 
