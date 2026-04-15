@@ -599,13 +599,31 @@ if USE_PG:
         )
 
         etica_classes = [
-            ("Etica na Administracao Publica", 30),
-            ("Principios Eticos", 30),
-            ("Codigo de Etica", 30),
-            ("Probidade Administrativa", 35),
-            ("Conflitos de Interesse", 25),
-            ("Responsabilidades do Servidor", 30),
-            ("Legislacao Etica - Lei 8.429/1992", 40),
+            (
+                "Principios Expressos: legalidade, impessoalidade, moralidade, publicidade e eficiencia",
+                33,
+            ),
+            ("Principios Implicitos na CF 88 - Parte 1", 33),
+            ("Principios Implicitos na CF 88 - Parte 2", 28),
+            ("Principios Implicitos na CF 88 - Parte 3", 17),
+            ("Questoes de Principios - Parte 1", 26),
+            ("Questoes de Principios - Parte 2", 38),
+            ("Lei 8.429/1992 - Improbidade Administrativa - Introducao", 40),
+            ("Lei 8.429/1992 - Atos de Improbidade", 25),
+            ("Lei 8.429/1992 - Atos que Causam Prejuizo ao Erario", 24),
+            ("Lei 8.429/1992 - Atentam Contra os Principios da Adm Publica", 27),
+            ("Lei 8.429/1992 - Penas", 20),
+            ("Lei 8.429/1992 - Processo Administrativo e Judicial", 39),
+            ("Lei 8.429/1992 - Disposicoes Penais", 12),
+            ("Lei 12.846/13 - Lei Anticorrupcao - Disposicoes Gerais", 20),
+            ("Lei 12.846/13 - Atos Lesivos", 18),
+            ("Lei 12.846/13 - Responsabilizacao Administrativa", 24),
+            ("Lei 12.846/13 - Processo de Responsabilizacao", 24),
+            ("Lei 12.846/13 - Acordo de Leniencia", 28),
+            ("Lei 12.846/13 - Disposicoes Finais", 16),
+            ("Deveres e responsabilidades do servidor", 0),
+            ("Integridade institucional no Poder Jhudiciario", 0),
+            ("Resolucao TJ 22/2021 do TJSC", 0),
         ]
 
         for title, dur in etica_classes:
