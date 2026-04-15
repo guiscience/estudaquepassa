@@ -32,25 +32,38 @@ def get_db_connection():
             sql = sql.replace("?", "%s")
             cursor = original_execute(sql, params)
 
-            # Make it have fetchone/fetchall methods that return dict-like
+            # Make it have fetchone/fetchall methods that return dict-like with numeric access too
             class Result:
                 def __init__(self, cursor):
                     self._cursor = cursor
+                    self._cols = (
+                        [desc[0] for desc in self._cursor.description]
+                        if self._cursor.description
+                        else []
+                    )
 
                 def fetchone(self):
                     row = self._cursor.fetchone()
                     if row is None:
                         return None
-                    # Convert to dict using column names
-                    cols = [desc[0] for desc in self._cursor.description]
-                    return dict(zip(cols, row))
+                    # Convert to dict that also supports numeric index
+                    d = dict(zip(self._cols, row))
+                    # Add numeric key access for compatibility
+                    for i, v in enumerate(row):
+                        d[i] = v
+                    return d
 
                 def fetchall(self):
                     rows = self._cursor.fetchall()
                     if not rows:
                         return []
-                    cols = [desc[0] for desc in self._cursor.description]
-                    return [dict(zip(cols, row)) for row in rows]
+                    result = []
+                    for row in rows:
+                        d = dict(zip(self._cols, row))
+                        for i, v in enumerate(row):
+                            d[i] = v
+                        result.append(d)
+                    return result
 
             return Result(cursor)
 
